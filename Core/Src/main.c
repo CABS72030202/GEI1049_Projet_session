@@ -47,8 +47,9 @@ TIM_HandleTypeDef htim6;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
+volatile uint16_t nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
+volatile uint32_t arrTimerVitesse = 200-1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -268,11 +269,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(Encodeur_D_B_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Encodeur_D_A_Pin */
-  GPIO_InitStruct.Pin = Encodeur_D_A_Pin;
+  /*Configure GPIO pins : Encodeur_G_A_Pin Encodeur_D_A_Pin */
+  GPIO_InitStruct.Pin = Encodeur_G_A_Pin|Encodeur_D_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Encodeur_D_A_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
@@ -288,18 +289,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD ++ ; // compte les pulses de lencodeur droit
+	}//fonctionne
+
+	else if(GPIO_Pin == GPIO_PIN_8)
+	{
+		nbPulseG ++ ; // compte les pulses de lencodeur droit
 	}
 
-} //fonctionne
+}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM6)
     {
-    	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
+    	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en mm/s
+    	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en mm/s
+
+    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 
     	nbPulseD = 0 ;
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    	nbPulseG = 0 ;
     }
 }
 /* USER CODE END 4 */
