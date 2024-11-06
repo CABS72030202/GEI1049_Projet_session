@@ -268,11 +268,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(Encodeur_D_B_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Encodeur_D_A_Pin */
-  GPIO_InitStruct.Pin = Encodeur_D_A_Pin;
+  /*Configure GPIO pins : Encodeur_G_A_Pin Encodeur_D_A_Pin */
+  GPIO_InitStruct.Pin = Encodeur_G_A_Pin|Encodeur_D_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Encodeur_D_A_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
@@ -290,6 +290,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		nbPulseD ++ ; // compte les pulses de lencodeur droit
 	}
 
+	if(GPIO_Pin == GPIO_PIN_8)
+	{
+		nbPulseG ++ ; // compte les pulses de lencodeur droit
+	}
+
 } //fonctionne
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -297,8 +302,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim->Instance == TIM6)
     {
     	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
+    	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
 
     	nbPulseD = 0 ;
+    	nbPulseG = 0;
     	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     }
 }

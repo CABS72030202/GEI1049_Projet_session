@@ -71,6 +71,9 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOA
 #define Encodeur_D_B_Pin GPIO_PIN_7
 #define Encodeur_D_B_GPIO_Port GPIOC
+#define Encodeur_G_A_Pin GPIO_PIN_8
+#define Encodeur_G_A_GPIO_Port GPIOA
+#define Encodeur_G_A_EXTI_IRQn EXTI9_5_IRQn
 #define Encodeur_D_A_Pin GPIO_PIN_9
 #define Encodeur_D_A_GPIO_Port GPIOA
 #define Encodeur_D_A_EXTI_IRQn EXTI9_5_IRQn
