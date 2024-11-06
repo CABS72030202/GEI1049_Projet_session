@@ -47,7 +47,7 @@ TIM_HandleTypeDef htim6;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
+volatile uint16_t arrTimerVitesse = 1000-1, nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
 /* USER CODE END PV */
 
@@ -178,7 +178,7 @@ static void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 42000-1;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 200-1;
+  htim6.Init.Period = 1000-1;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -307,6 +307,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	nbPulseD = 0 ;
     	nbPulseG = 0;
     	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
+    	// fonction a Emeric
     }
 }
 /* USER CODE END 4 */

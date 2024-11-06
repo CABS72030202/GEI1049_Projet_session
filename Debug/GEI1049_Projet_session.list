@@ -568,52 +568,51 @@ static void MX_TIM6_Init(void)
  8000614:	4b11      	ldr	r3, [pc, #68]	@ (800065c <MX_TIM6_Init+0x64>)
  8000616:	2200      	movs	r2, #0
  8000618:	609a      	str	r2, [r3, #8]
-  htim6.Init.Period = 200-1;
+  htim6.Init.Period = 1000-1;
  800061a:	4b10      	ldr	r3, [pc, #64]	@ (800065c <MX_TIM6_Init+0x64>)
- 800061c:	22c7      	movs	r2, #199	@ 0xc7
- 800061e:	60da      	str	r2, [r3, #12]
+ 800061c:	f240 32e7 	movw	r2, #999	@ 0x3e7
+ 8000620:	60da      	str	r2, [r3, #12]
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
- 8000620:	4b0e      	ldr	r3, [pc, #56]	@ (800065c <MX_TIM6_Init+0x64>)
- 8000622:	2200      	movs	r2, #0
- 8000624:	619a      	str	r2, [r3, #24]
+ 8000622:	4b0e      	ldr	r3, [pc, #56]	@ (800065c <MX_TIM6_Init+0x64>)
+ 8000624:	2200      	movs	r2, #0
+ 8000626:	619a      	str	r2, [r3, #24]
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
- 8000626:	480d      	ldr	r0, [pc, #52]	@ (800065c <MX_TIM6_Init+0x64>)
- 8000628:	f001 fbc6 	bl	8001db8 <HAL_TIM_Base_Init>
- 800062c:	4603      	mov	r3, r0
- 800062e:	2b00      	cmp	r3, #0
- 8000630:	d001      	beq.n	8000636 <MX_TIM6_Init+0x3e>
+ 8000628:	480c      	ldr	r0, [pc, #48]	@ (800065c <MX_TIM6_Init+0x64>)
+ 800062a:	f001 fbc5 	bl	8001db8 <HAL_TIM_Base_Init>
+ 800062e:	4603      	mov	r3, r0
+ 8000630:	2b00      	cmp	r3, #0
+ 8000632:	d001      	beq.n	8000638 <MX_TIM6_Init+0x40>
   {
     Error_Handler();
- 8000632:	f000 f955 	bl	80008e0 <Error_Handler>
+ 8000634:	f000 f954 	bl	80008e0 <Error_Handler>
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
- 8000636:	2320      	movs	r3, #32
- 8000638:	603b      	str	r3, [r7, #0]
+ 8000638:	2320      	movs	r3, #32
+ 800063a:	603b      	str	r3, [r7, #0]
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
- 800063a:	2300      	movs	r3, #0
- 800063c:	607b      	str	r3, [r7, #4]
+ 800063c:	2300      	movs	r3, #0
+ 800063e:	607b      	str	r3, [r7, #4]
   if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
- 800063e:	463b      	mov	r3, r7
- 8000640:	4619      	mov	r1, r3
- 8000642:	4806      	ldr	r0, [pc, #24]	@ (800065c <MX_TIM6_Init+0x64>)
- 8000644:	f001 fe3c 	bl	80022c0 <HAL_TIMEx_MasterConfigSynchronization>
- 8000648:	4603      	mov	r3, r0
- 800064a:	2b00      	cmp	r3, #0
- 800064c:	d001      	beq.n	8000652 <MX_TIM6_Init+0x5a>
+ 8000640:	463b      	mov	r3, r7
+ 8000642:	4619      	mov	r1, r3
+ 8000644:	4805      	ldr	r0, [pc, #20]	@ (800065c <MX_TIM6_Init+0x64>)
+ 8000646:	f001 fe3b 	bl	80022c0 <HAL_TIMEx_MasterConfigSynchronization>
+ 800064a:	4603      	mov	r3, r0
+ 800064c:	2b00      	cmp	r3, #0
+ 800064e:	d001      	beq.n	8000654 <MX_TIM6_Init+0x5c>
   {
     Error_Handler();
- 800064e:	f000 f947 	bl	80008e0 <Error_Handler>
+ 8000650:	f000 f946 	bl	80008e0 <Error_Handler>
   }
   /* USER CODE BEGIN TIM6_Init 2 */
 
   /* USER CODE END TIM6_Init 2 */
 
 }
- 8000652:	bf00      	nop
- 8000654:	3708      	adds	r7, #8
- 8000656:	46bd      	mov	sp, r7
- 8000658:	bd80      	pop	{r7, pc}
- 800065a:	bf00      	nop
+ 8000654:	bf00      	nop
+ 8000656:	3708      	adds	r7, #8
+ 8000658:	46bd      	mov	sp, r7
+ 800065a:	bd80      	pop	{r7, pc}
  800065c:	2000002c 	.word	0x2000002c
  8000660:	40001000 	.word	0x40001000
 
@@ -978,6 +977,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80008ae:	2120      	movs	r1, #32
  80008b0:	480a      	ldr	r0, [pc, #40]	@ (80008dc <HAL_TIM_PeriodElapsedCallback+0xb8>)
  80008b2:	f000 fc66 	bl	8001182 <HAL_GPIO_TogglePin>
+
+    	// fonction a Emeric
     }
 }
  80008b6:	bf00      	nop
