@@ -49,6 +49,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
+int VitCommandeGauche = 0, VitCommandeDroite = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
