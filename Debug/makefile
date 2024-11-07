@@ -60,8 +60,8 @@ all: main-build
 main-build: GEI1049_Projet_session.elf secondary-outputs
 
 # Tool invocations
-GEI1049_Projet_session.elf GEI1049_Projet_session.map: $(OBJS) $(USER_OBJS) C:\STM32CubeIDE\github\GEI1049_Projet_session\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "GEI1049_Projet_session.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\STM32CubeIDE\github\GEI1049_Projet_session\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GEI1049_Projet_session.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+GEI1049_Projet_session.elf GEI1049_Projet_session.map: $(OBJS) $(USER_OBJS) C:\Users\emeri\Documents\GitHub\GEI1049_Projet_session\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "GEI1049_Projet_session.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\emeri\Documents\GitHub\GEI1049_Projet_session\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GEI1049_Projet_session.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
