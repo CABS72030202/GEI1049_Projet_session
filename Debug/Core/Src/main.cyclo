@@ -6,5 +6,5 @@
 ../Core/Src/main.c:324:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:357:13:MX_GPIO_Init	1
 ../Core/Src/main.c:406:6:HAL_GPIO_EXTI_Callback	3
-../Core/Src/main.c:420:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:438:6:Error_Handler	1
+../Core/Src/main.c:420:6:HAL_TIM_PeriodElapsedCallback	19
+../Core/Src/main.c:511:6:Error_Handler	1

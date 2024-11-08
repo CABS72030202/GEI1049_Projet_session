@@ -431,26 +431,74 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if(htim->Instance == TIM7)//Émeric
     {
-    	if(VitCommandeGauche > 0){
-
+    	if((VitCommandeGauche == vitesseG + 10 || VitCommandeGauche == vitesseG - 10) && (VitCommandeDroite == vitesseD + 10 || VitCommandeDroite == vitesseD - 10)){
+    		HAL_TIM_Base_Stop_IT(&htim7);
+    		return;
     	}
-    	else if(VitCommandeGauche < 0){
 
-    	}
     	else{
-    		htim3.Instance -> CCR1 = 0;
-    		htim3.Instance -> CCR2 = 0;
-    	}
 
-    	if(VitCommandeDroite > 0){
+    		if(VitCommandeGauche > 0){
 
-    	}
-    	else if(VitCommandeDroite < 0){
+			    htim3.Instance -> CCR2 = 0;
 
-    	}
-    	else {
-    		htim3.Instance -> CCR3 = 0;
-    		htim3.Instance -> CCR4 = 0;
+    			if(VitCommandeGauche > vitesseG){
+    				htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + 10;
+    			}
+    			else if(VitCommandeGauche < vitesseG){
+    				htim3.Instance -> CCR1 = htim3.Instance -> CCR1 - 10;
+    			}
+
+    		}
+
+    		else if(VitCommandeGauche < 0){
+
+    			htim3.Instance -> CCR1 = 0;
+
+    			if(VitCommandeGauche < vitesseG){
+    			    htim3.Instance -> CCR2 = htim3.Instance -> CCR2 + 10;
+    			}
+    			else if(VitCommandeGauche > vitesseG){
+    			    htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - 10;
+    			}
+
+    		}
+
+    		else{
+    			htim3.Instance -> CCR1 = 0;
+    			htim3.Instance -> CCR2 = 0;
+    		}
+
+    		if(VitCommandeDroite > 0){
+
+    			htim3.Instance -> CCR4 = 0;
+
+    			if(VitCommandeDroite > vitesseD){
+    			    htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + 10;
+    			}
+    			else if(VitCommandeDroite < vitesseD){
+    			    htim3.Instance -> CCR3 = htim3.Instance -> CCR3 - 10;
+    			}
+
+    		}
+
+    		else if(VitCommandeDroite < 0){
+
+    			htim3.Instance -> CCR3 = 0;
+
+    			if(VitCommandeDroite < vitesseD){
+    				htim3.Instance -> CCR4 = htim3.Instance -> CCR4 + 10;
+    			}
+    			else if(VitCommandeDroite > vitesseD){
+    			    htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - 10;
+    			}
+
+    		}
+
+    		else {
+    			htim3.Instance -> CCR3 = 0;
+    			htim3.Instance -> CCR4 = 0;
+    		}
     	}
     }
 }
