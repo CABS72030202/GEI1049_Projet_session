@@ -35,6 +35,9 @@
 #define PULSE_PAR_TOUR 74
 #define CIRCONFERENCE 157 // en mm
 #define PI 3.14159
+#define INCERTITUDE 10
+#define ARRTIM7	499
+#define MAX_VIT_REEL 225
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -432,7 +435,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if(htim->Instance == TIM7)//Émeric
     {
-    	if((VitCommandeGauche == vitesseG + 10 || VitCommandeGauche == vitesseG - 10) && (VitCommandeDroite == vitesseD + 10 || VitCommandeDroite == vitesseD - 10)){
+    	if((VitCommandeGauche == vitesseG + INCERTITUDE || VitCommandeGauche == vitesseG - INCERTITUDE) && (VitCommandeDroite == vitesseD + INCERTITUDE || VitCommandeDroite == vitesseD - INCERTITUDE)){
     		HAL_TIM_Base_Stop_IT(&htim7);
     		return;
     	}
@@ -442,28 +445,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     		if(VitCommandeGauche > 0){
 
 			    htim3.Instance -> CCR2 = 0;
-			    VitPulse = (abs(VitCommandeGauche - vitesseG)/225) * 499;
-
-			    if((VitCommandeGauche - vitesseG) > 0){
-			    	htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + VitPusle;
-			    }
-			    else if((VitCommandeGauche - vitesseG) < 0){
-			    	htim3.Instance -> CCR1 = htim3.Instance -> CCR1 - VitPusle;
-			    }
+			    htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + ((VitCommandeGauche - vitesseG)/MAX_VIT_REEL * ARRTIM7);
 
     		}
 
     		else if(VitCommandeGauche < 0){
 
     			htim3.Instance -> CCR1 = 0;
-    			VitPulse = (abs(VitCommandeGauche - vitesseG)/225) * 499;
-
-    			if((VitCommandeGauche - vitesseG) > 0){
-    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - VitPusle;
-    			}
-    			else if((VitCommandeGauche - vitesseG) < 0){
-    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 + VitPusle;
-    			}
+    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - ((VitCommandeGauche - vitesseG)/MAX_VIT_REEL * ARRTIM7);
 
     		}
 
@@ -475,30 +464,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     		if(VitCommandeDroite > 0){
 
     			htim3.Instance -> CCR4 = 0;
-    			VitPulse = (abs(VitCommandeDroite - vitesseD)/225) * 499;
-
-    			if((VitCommandeDroite - vitesseD) > 0){
-    				htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + VitPusle;
-    			}
-    			else if((VitCommandeDroite - vitesseD) < 0){
-    				htim3.Instance -> CCR3 = htim3.Instance -> CCR3 - VitPusle;
-    			}
+    			htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + ((VitCommandeDroite - vitesseD)/MAX_VIT_REEL * ARRTIM7);
 
 
     		}
 
     		else if(VitCommandeDroite < 0){
 
+
     			htim3.Instance -> CCR3 = 0;
-    			VitPulse = (abs(VitCommandeDroite - vitesseD)/225) * 499;
-
-    			if((VitCommandeDroite - vitesseD) > 0){
-    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - VitPusle;
-    			}
-    			else if((VitCommandeDroite - vitesseD) < 0){
-    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 + VitPusle;
-    			}
-
+    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - ((VitCommandeDroite - vitesseD)/MAX_VIT_REEL * ARRTIM7);
 
     		}
 
