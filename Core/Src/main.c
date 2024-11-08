@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "gestion_moteurs.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +52,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
-int VitCommandeGauche = 0, VitCommandeDroite = 0;
+int VitCommandeGauche = 0, VitCommandeDroite = 0, VitPulse = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -441,25 +442,27 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     		if(VitCommandeGauche > 0){
 
 			    htim3.Instance -> CCR2 = 0;
+			    VitPulse = (abs(VitCommandeGauche - vitesseG)/225) * 499;
 
-    			if(VitCommandeGauche > vitesseG){
-    				htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + 10;
-    			}
-    			else if(VitCommandeGauche < vitesseG){
-    				htim3.Instance -> CCR1 = htim3.Instance -> CCR1 - 10;
-    			}
+			    if((VitCommandeGauche - vitesseG) > 0){
+			    	htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + VitPusle;
+			    }
+			    else if((VitCommandeGauche - vitesseG) < 0){
+			    	htim3.Instance -> CCR1 = htim3.Instance -> CCR1 - VitPusle;
+			    }
 
     		}
 
     		else if(VitCommandeGauche < 0){
 
     			htim3.Instance -> CCR1 = 0;
+    			VitPulse = (abs(VitCommandeGauche - vitesseG)/225) * 499;
 
-    			if(VitCommandeGauche < vitesseG){
-    			    htim3.Instance -> CCR2 = htim3.Instance -> CCR2 + 10;
+    			if((VitCommandeGauche - vitesseG) > 0){
+    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - VitPusle;
     			}
-    			else if(VitCommandeGauche > vitesseG){
-    			    htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - 10;
+    			else if((VitCommandeGauche - vitesseG) < 0){
+    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 + VitPusle;
     			}
 
     		}
@@ -472,26 +475,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     		if(VitCommandeDroite > 0){
 
     			htim3.Instance -> CCR4 = 0;
+    			VitPulse = (abs(VitCommandeDroite - vitesseD)/225) * 499;
 
-    			if(VitCommandeDroite > vitesseD){
-    			    htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + 10;
+    			if((VitCommandeDroite - vitesseD) > 0){
+    				htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + VitPusle;
     			}
-    			else if(VitCommandeDroite < vitesseD){
-    			    htim3.Instance -> CCR3 = htim3.Instance -> CCR3 - 10;
+    			else if((VitCommandeDroite - vitesseD) < 0){
+    				htim3.Instance -> CCR3 = htim3.Instance -> CCR3 - VitPusle;
     			}
+
 
     		}
 
     		else if(VitCommandeDroite < 0){
 
     			htim3.Instance -> CCR3 = 0;
+    			VitPulse = (abs(VitCommandeDroite - vitesseD)/225) * 499;
 
-    			if(VitCommandeDroite < vitesseD){
-    				htim3.Instance -> CCR4 = htim3.Instance -> CCR4 + 10;
+    			if((VitCommandeDroite - vitesseD) > 0){
+    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - VitPusle;
     			}
-    			else if(VitCommandeDroite > vitesseD){
-    			    htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - 10;
+    			else if((VitCommandeDroite - vitesseD) < 0){
+    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 + VitPusle;
     			}
+
 
     		}
 
