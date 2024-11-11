@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "gestion_moteurs.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +35,9 @@
 #define PULSE_PAR_TOUR 74
 #define CIRCONFERENCE 157 // en mm
 #define PI 3.14159
+#define INCERTITUDE 10
+#define ARRTIM7	499
+#define MAX_VIT_REEL 225
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,14 +46,16 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-volatile uint16_t nbPulseD = 0, nbPulseG = 0;
+volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
-volatile uint32_t arrTimerVitesse = 200-1;
+int VitCommandeGauche = 0, VitCommandeDroite = 0, VitPulse = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +63,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -97,6 +105,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_TIM6_Init();
+  MX_TIM3_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
@@ -105,6 +115,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_Delay(2000);
+	  VitCommande(22, 43, &VitCommandeGauche, &VitCommandeDroite, htim7);
+	  HAL_Delay(2000);
+	  HAL_TIM_Base_Stop_IT(&htim7);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -160,6 +174,77 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 84-1;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 500-1;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
   * @brief TIM6 Initialization Function
   * @param None
   * @retval None
@@ -194,6 +279,44 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 2 */
 
   /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 42000-1;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 200-1;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
 
 }
 
@@ -289,26 +412,76 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD ++ ; // compte les pulses de lencodeur droit
-	}//fonctionne
+	}
 
-	else if(GPIO_Pin == GPIO_PIN_8)
+	if(GPIO_Pin == GPIO_PIN_8)
 	{
 		nbPulseG ++ ; // compte les pulses de lencodeur droit
 	}
 
-}
+} //fonctionne
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM6)
     {
-    	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en mm/s
-    	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en mm/s
-
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
+    	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
 
     	nbPulseD = 0 ;
-    	nbPulseG = 0 ;
+    	nbPulseG = 0;
+    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    }
+
+    if(htim->Instance == TIM7)//Émeric
+    {
+    	if((VitCommandeGauche == vitesseG + INCERTITUDE || VitCommandeGauche == vitesseG - INCERTITUDE) && (VitCommandeDroite == vitesseD + INCERTITUDE || VitCommandeDroite == vitesseD - INCERTITUDE)){
+    		HAL_TIM_Base_Stop_IT(&htim7);
+    		return;
+    	}
+
+    	else{
+
+    		if(VitCommandeGauche > 0){
+
+			    htim3.Instance -> CCR2 = 0;
+			    htim3.Instance -> CCR1 = htim3.Instance -> CCR1 + ((VitCommandeGauche - vitesseG)/MAX_VIT_REEL * ARRTIM7);
+
+    		}
+
+    		else if(VitCommandeGauche < 0){
+
+    			htim3.Instance -> CCR1 = 0;
+    			htim3.Instance -> CCR2 = htim3.Instance -> CCR2 - ((VitCommandeGauche - vitesseG)/MAX_VIT_REEL * ARRTIM7);
+
+    		}
+
+    		else{
+    			htim3.Instance -> CCR1 = 0;
+    			htim3.Instance -> CCR2 = 0;
+    		}
+
+    		if(VitCommandeDroite > 0){
+
+    			htim3.Instance -> CCR4 = 0;
+    			htim3.Instance -> CCR3 = htim3.Instance -> CCR3 + ((VitCommandeDroite - vitesseD)/MAX_VIT_REEL * ARRTIM7);
+
+
+    		}
+
+    		else if(VitCommandeDroite < 0){
+
+
+    			htim3.Instance -> CCR3 = 0;
+    			htim3.Instance -> CCR4 = htim3.Instance -> CCR4 - ((VitCommandeDroite - vitesseD)/MAX_VIT_REEL * ARRTIM7);
+
+    		}
+
+    		else {
+    			htim3.Instance -> CCR3 = 0;
+    			htim3.Instance -> CCR4 = 0;
+    		}
+    	}
     }
 }
 /* USER CODE END 4 */
