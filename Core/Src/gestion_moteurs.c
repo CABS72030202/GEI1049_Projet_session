@@ -7,29 +7,62 @@
 
 #include "gestion_moteurs.h"
 
-#define max 200
-#define min -200
+void Avancer(int Pulse,TIM_HandleTypeDef htim3){
 
-void VitCommande(int Vgc, int Vdc, int *Vgv, int *Vdv, TIM_HandleTypeDef htim7){
+	htim3.Instance -> CCR2 = 0;
+	htim3.Instance -> CCR4 = 0;
 
-	if(Vgc >= max){
-		*Vgv = max;
-	}
-	else if(Vgc <= min){
-		*Vgv = min;
-	}
-	else{
-		*Vgv = Vgc;
+	if(Pulse > 499){
+		Pulse = 499;
 	}
 
-	if(Vdc >= max){
-		*Vdv = max;
+	htim3.Instance -> CCR1 = Pulse;
+	htim3.Instance -> CCR3 = htim3.Instance -> CCR1 * 0.9;
+
+	return;
+}
+
+void Droite(int Pulse, TIM_HandleTypeDef htim3){
+
+	htim3.Instance -> CCR2 = 0;
+	htim3.Instance -> CCR3 = 0;
+
+	if(Pulse > 499){
+		Pulse = 499;
 	}
-	else if(Vdc <= min){
-		*Vdv = min;
+	htim3.Instance -> CCR1 = Pulse;
+	htim3.Instance -> CCR4 = htim3.Instance -> CCR1 * 0.9;
+}
+
+void Gauche(int Pulse, TIM_HandleTypeDef htim3){
+
+	htim3.Instance -> CCR1 = 0;
+	htim3.Instance -> CCR4 = 0;
+
+	if(Pulse > 499){
+		Pulse = 499;
 	}
-	else{
-		*Vdv = Vdc;
+	htim3.Instance -> CCR2 = Pulse;
+	htim3.Instance -> CCR3 = htim3.Instance -> CCR2 * 0.9;
+}
+
+void Reculer(int Pulse,TIM_HandleTypeDef htim3){
+
+	htim3.Instance -> CCR1 = 0;
+	htim3.Instance -> CCR3 = 0;
+
+	if(Pulse > 499){
+		Pulse = 499;
 	}
-	HAL_TIM_Base_Start_IT(&htim7);
+
+	htim3.Instance -> CCR4 = Pulse;
+	htim3.Instance -> CCR2 = htim3.Instance -> CCR4 * 0.95;
+
+	return;
+}
+void Stop(TIM_HandleTypeDef htim3){
+	htim3.Instance -> CCR1 = 0;
+	htim3.Instance -> CCR2 = 0;
+	htim3.Instance -> CCR3 = 0;
+	htim3.Instance -> CCR4 = 0;
 }

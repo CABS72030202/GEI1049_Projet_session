@@ -10,6 +10,10 @@
 
 #include "stm32f4xx_hal.h"
 
-void VitCommande(int, int, int *, int *, TIM_HandleTypeDef);
+void Avancer(int, TIM_HandleTypeDef);
+void Droite(int, TIM_HandleTypeDef);
+void Gauche(int, TIM_HandleTypeDef);
+void Reculer(int, TIM_HandleTypeDef);
+void Stop(TIM_HandleTypeDef);
 
 #endif /* INC_GESTION_MOTEURS_H_ */
