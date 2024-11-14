@@ -7,7 +7,12 @@
 
 #ifndef INC_VITESSE_AFFICHAGE_H_
 #define INC_VITESSE_AFFICHAGE_H_
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
+void LCD_Vitesse(uint16_t vitesseG, uint16_t vitesseD);
+void LCD_Init();
 
 
 #endif /* INC_VITESSE_AFFICHAGE_H_ */
