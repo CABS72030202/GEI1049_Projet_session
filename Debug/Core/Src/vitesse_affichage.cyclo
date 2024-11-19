@@ -1,3 +1,0 @@
-../Core/Src/vitesse_affichage.c:17:6:LCD_Mode	5
-../Core/Src/vitesse_affichage.c:38:6:LCD_Vitesse	1
-../Core/Src/vitesse_affichage.c:54:6:LCD_Init	9

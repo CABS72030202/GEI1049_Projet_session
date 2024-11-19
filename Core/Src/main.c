@@ -21,8 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "gestion_moteurs.h"
-#include "math.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -346,11 +345,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  /*Configure GPIO pin : Blue_Button_Pin */
+  GPIO_InitStruct.Pin = Blue_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Blue_Button_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Dipswitch_MSB_Pin Dipswitch_LSB_Pin Encodeur_D_B_Pin */
+  GPIO_InitStruct.Pin = Dipswitch_MSB_Pin|Dipswitch_LSB_Pin|Encodeur_D_B_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
@@ -359,12 +364,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Encodeur_D_B_Pin */
-  GPIO_InitStruct.Pin = Encodeur_D_B_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(Encodeur_D_B_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : Encodeur_G_A_Pin Encodeur_D_A_Pin */
   GPIO_InitStruct.Pin = Encodeur_G_A_Pin|Encodeur_D_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -372,7 +371,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 1);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -384,12 +383,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
-		nbPulseD ++ ; // compte les pulses de lencodeur droit
+		nbPulseD++ ; // compte les pulses de lencodeur droit
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)
 	{
-		nbPulseG ++ ; // compte les pulses de lencodeur droit
+		nbPulseG++ ; // compte les pulses de lencodeur droit
+	}
+
+	if(GPIO_Pin == Blue_Button_Pin) {
+		curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 	}
 
 } //fonctionne
