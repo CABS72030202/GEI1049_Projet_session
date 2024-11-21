@@ -7,7 +7,7 @@
 
 #include "gestion_moteurs.h"
 
-void Avancer(int Pulse,TIM_HandleTypeDef* htim3){
+void Avancer(int Pulse, TIM_HandleTypeDef* htim3){
 
 	htim3->Instance -> CCR2 = 0;
 	htim3->Instance -> CCR4 = 0;

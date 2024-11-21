@@ -132,6 +132,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  curr_mode = 2;
 	if(curr_mode != 0) { 	// Toggle auto mode
 		switch(curr_mode) {
 			case CIRCLE_ID:
@@ -410,7 +411,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 
 	if(GPIO_Pin == Blue_Button_Pin) {
-		curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
+		curr_mode = 2;	// FOR DEBUG
+		//curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 	}
 
 } //fonctionne

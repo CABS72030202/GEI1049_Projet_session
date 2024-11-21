@@ -23,14 +23,14 @@
 #define BACK_FORTH_ID 2
 #define SQUARE_ID 3
 
-#define TRACK_RESOLUTION 0.5	// Distance per encoder step in mm
-#define TRACK_WIDTH 100     	// Distance between the two tracks in mm
+#define TRACK_RESOLUTION 2		// Distance per encoder step in mm
+#define TRACK_WIDTH 272     	// Distance between the two tracks in mm
 #define UPDATE_INTERVAL 50		// Time interval for speed updates in ms
-#define SPEED_FACTOR 0.1     	// Speed factor
+#define SPEED_FACTOR 0.03     	// Speed factor
 
-#define BASE_SPEED 100
+#define BASE_SPEED 450
 #define CIRCLE_CIRCUMFERENCE 6280
-#define DISTANCE 1000
+#define DISTANCE 100
 
 // Variables
 extern uint8_t curr_mode;		// Current mode
