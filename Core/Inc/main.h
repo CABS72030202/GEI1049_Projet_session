@@ -66,6 +66,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define Blue_Button_Pin GPIO_PIN_13
 #define Blue_Button_GPIO_Port GPIOC
+#define Blue_Button_EXTI_IRQn EXTI15_10_IRQn
 #define Dipswitch_MSB_Pin GPIO_PIN_2
 #define Dipswitch_MSB_GPIO_Port GPIOC
 #define Dipswitch_LSB_Pin GPIO_PIN_3
