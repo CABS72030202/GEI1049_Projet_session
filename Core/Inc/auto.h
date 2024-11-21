@@ -26,7 +26,7 @@
 #define SPEED_FACTOR 0.1     	// Speed factor
 
 #define BASE_SPEED 100
-#define CIRCUMFERENCE 6280
+#define CIRCLE_CIRCUMFERENCE 6280
 #define DISTANCE 1000
 
 // Variables
@@ -34,12 +34,11 @@ extern uint8_t curr_mode;		// Current mode
 
 // Prototypes
 int Get_Mode(int, int);			// Converts the binary input into active mode
-void Auto_Angle(int, TIM_HandleTypeDef);
-void Auto_Line(int, int, int, TIM_HandleTypeDef);
-void Auto_Circle(TIM_HandleTypeDef);
-void Auto_Back_Forth(TIM_HandleTypeDef);
-void Auto_Square(TIM_HandleTypeDef);
-
+void Auto_Angle(int, TIM_HandleTypeDef*);
+void Auto_Line(int, int, int, TIM_HandleTypeDef*);
+void Auto_Circle(TIM_HandleTypeDef*);
+void Auto_Back_Forth(TIM_HandleTypeDef*);
+void Auto_Square(TIM_HandleTypeDef*);
 
 
 #endif /* INC_AUTO_H_ */

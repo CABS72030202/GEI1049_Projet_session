@@ -132,6 +132,24 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	if(curr_mode != 0) { 	// Toggle auto mode
+		switch(curr_mode) {
+			case CIRCLE_ID:
+				Auto_Circle(&htim3);
+				break;
+			case BACK_FORTH_ID:
+				Auto_Back_Forth(&htim3);
+				break;
+			case SQUARE_ID:
+				Auto_Square(&htim3);
+				break;
+		}
+		curr_mode = 0;	// Return to manual mode after drawing shape
+	}
+
+	else { 	// Manual mode
+
+	}
   }
   /* USER CODE END 3 */
 }
