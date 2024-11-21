@@ -11,6 +11,9 @@
 // Includes
 #include <stdint.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "stm32f4xx_hal.h"
 #include "gestion_moteurs.h"
 
@@ -34,6 +37,7 @@ extern uint8_t curr_mode;		// Current mode
 
 // Prototypes
 int Get_Mode(int, int);			// Converts the binary input into active mode
+char* Get_Mode_String();		// Convert the current mode to a string
 void Auto_Angle(int, TIM_HandleTypeDef*);
 void Auto_Line(int, int, int, TIM_HandleTypeDef*);
 void Auto_Circle(TIM_HandleTypeDef*);

@@ -15,6 +15,29 @@ int Get_Mode(int MSB_state, int LSB_state) {
 	return id_lookup[bin];
 }
 
+char* Get_Mode_String() {
+	const size_t buffer_size = 8;
+	char* str = malloc(buffer_size);
+	switch(curr_mode) {
+		case MANUAL_ID:
+			str = "MANUAL";
+			break;
+		case CIRCLE_ID:
+			str = "CIRCLE";
+			break;
+		case BACK_FORTH_ID:
+			str = "LINE";
+			break;
+		case SQUARE_ID:
+			str = "SQUARE";
+			break;
+		default:
+			str = "ERROR";
+			break;
+	}
+	return str;
+}
+
 void Auto_Angle(int value, TIM_HandleTypeDef* htim3) {
     // Calculate the duration for the turn
     double turning_time = (fabs(value) * TRACK_WIDTH) / (360.0 * SPEED_FACTOR);
