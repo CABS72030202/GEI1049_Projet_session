@@ -8,6 +8,8 @@
 #include "auto.h"
 
 uint8_t curr_mode = 0;
+volatile int timer_count = 0;
+float turning_time = 0;
 
 int Get_Mode(int MSB_state, int LSB_state) {
 	static const int id_lookup[4] = {MANUAL_ID, CIRCLE_ID, SQUARE_ID, BACK_FORTH_ID};
@@ -38,9 +40,9 @@ char* Get_Mode_String() {
 	return str;
 }
 
-void Auto_Angle(int value, TIM_HandleTypeDef* htim3) {
+void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
     // Calculate the duration for the turn
-    double turning_time = (fabs(value) * TRACK_WIDTH) / (360.0 * SPEED_FACTOR);
+    turning_time = fabs(value) * TRACK_WIDTH;
 
     // Determine direction of turn
     if (value > 0) {
@@ -49,6 +51,7 @@ void Auto_Angle(int value, TIM_HandleTypeDef* htim3) {
         htim3->Instance->CCR3 = 0;  // Reduce speed slightly for alignment
         htim3->Instance->CCR4 = 400;  // Set right track backward (CCR2, CCR4)
         htim3->Instance->CCR2 = 200;*/
+    	turning_time /= (360.0 * CLOCKWISE_FACTOR);
         Droite(BASE_SPEED, htim3);
     } else {
         // Counterclockwise turn (left): Left track backward, Right track forward
@@ -56,11 +59,23 @@ void Auto_Angle(int value, TIM_HandleTypeDef* htim3) {
         htim3->Instance->CCR4 = 0;  // Reduce speed slightly for alignment
         htim3->Instance->CCR1 = 400;  // Set left track backward
         htim3->Instance->CCR3 = 200;*/
+    	turning_time /= (360.0 * COUNTER_CLW_FACTOR);
     	Gauche(BASE_SPEED, htim3);
     }
 
+    // Convert turning time in µs
+    //turning_time = 20;
+    turning_time *= 1e6;
+
     // Delay for calculated turning time
-    HAL_Delay((int)turning_time);
+    HAL_TIM_Base_Start_IT(&htim7);
+    while(timer_count < (int)turning_time) {
+    	// Wait
+    }
+    HAL_TIM_Base_Stop_IT(&htim7);
+
+    // Reset temporal counter
+    timer_count = 0;
 
     // Stop the motors
     Stop(htim3);
@@ -117,19 +132,34 @@ void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {
     Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
 
     // Turn 180 degrees
-    Auto_Angle(180, htim3);
+    Auto_Angle(180.0, htim3);
 
     // Move backward 1 meter
     Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
 
     // Turn 180 degrees again to face the original direction
-    Auto_Angle(180, htim3);
+    Auto_Angle(180.0, htim3);
 }
 
 void Auto_Square(TIM_HandleTypeDef* htim3) {
     // Move forward and turn 90 degrees four times
     for (int i = 0; i < 4; i++) {
         Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED, htim3);
-        Auto_Angle(90, htim3);
+        Auto_Angle(90.0, htim3);
     }
+}
+
+int Calc_ARR(float update_event) {
+	const int psc = 59999, clk = 84e6, factor = 100;
+	int arr = 0;
+
+	// Convert update_event to ms for precision
+	update_event *= factor;
+
+	arr = (clk / (update_event * (psc + 1))) - 1;
+
+	// Adjust ARR from conversion factor
+	//arr /= factor;
+
+	return arr;
 }

@@ -44,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart2;
 
@@ -59,6 +60,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -100,6 +102,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM6_Init();
   MX_TIM3_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim6);
 
@@ -311,6 +314,44 @@ static void MX_TIM6_Init(void)
 }
 
 /**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 83;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 9;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -413,15 +454,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 
 	if(GPIO_Pin == Blue_Button_Pin) {
-		curr_mode = 2;	// FOR DEBUG
-		//curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
+		Stop(&htim3);
+		curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 	}
 
 } //fonctionne
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-
     if(htim->Instance == TIM6)
     {
     	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
@@ -432,6 +472,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     }
 
+    if(htim->Instance == TIM7) {	// Triggered every 10 µs
+    	timer_count += 10;
+    }
 }
 /* USER CODE END 4 */
 
