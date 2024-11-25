@@ -46,19 +46,9 @@ void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
 
     // Determine direction of turn
     if (value > 0) {
-        // Clockwise turn (right): Left track forward, Right track backward
-        /*htim3->Instance->CCR1 = 400;  // Set left track forward (CCR1, CCR3)
-        htim3->Instance->CCR3 = 0;  // Reduce speed slightly for alignment
-        htim3->Instance->CCR4 = 400;  // Set right track backward (CCR2, CCR4)
-        htim3->Instance->CCR2 = 200;*/
     	turning_time /= (360.0 * CLOCKWISE_FACTOR);
         Droite(BASE_SPEED, htim3);
     } else {
-        // Counterclockwise turn (left): Left track backward, Right track forward
-        /*htim3->Instance->CCR2 = 400;  // Set right track forward
-        htim3->Instance->CCR4 = 0;  // Reduce speed slightly for alignment
-        htim3->Instance->CCR1 = 400;  // Set left track backward
-        htim3->Instance->CCR3 = 200;*/
     	turning_time /= (360.0 * COUNTER_CLW_FACTOR);
     	Gauche(BASE_SPEED, htim3);
     }
@@ -86,9 +76,9 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
     int total_steps = (int)(dist / TRACK_RESOLUTION);
 
     // Split into acceleration, constant speed, and deceleration
-    int mid_steps = total_steps / 2;
-    int accel_steps = mid_steps / 2;
-    int decel_steps = total_steps - accel_steps - mid_steps;
+    int accel_steps = 2 * (total_steps / 5);
+    int decel_steps = accel_steps;
+    int mid_steps = total_steps - accel_steps - decel_steps;
 
     // Initialize speed
     int current_speed = min_speed;
@@ -96,27 +86,36 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
     // Acceleration phase
     for (int step = 0; step < accel_steps; step++) {
         current_speed = min_speed + (max_speed - min_speed) * step / accel_steps;
-        /*htim3->Instance->CCR1 = current_speed;  // Set speed for left track
-        htim3->Instance->CCR3 = current_speed;  // Set speed for right track*/
         Avancer(current_speed, htim3);
-        HAL_Delay(UPDATE_INTERVAL);            // Wait for update interval
+        HAL_TIM_Base_Start_IT(&htim7);
+        while(timer_count < UPDATE_INTERVAL * 1e3) {
+        	// Wait for update interval
+        }
+        HAL_TIM_Base_Stop_IT(&htim7);
+        timer_count = 0;
     }
 
     // Constant speed phase
     for (int step = 0; step < mid_steps; step++) {
-        /*htim3->Instance->CCR1 = max_speed;
-        htim3->Instance->CCR3 = max_speed;*/
     	Avancer(max_speed, htim3);
-        HAL_Delay(UPDATE_INTERVAL);
+    	HAL_TIM_Base_Start_IT(&htim7);
+    	while(timer_count < UPDATE_INTERVAL * 1e3) {
+    		// Wait for update interval
+    	}
+    	HAL_TIM_Base_Stop_IT(&htim7);
+    	timer_count = 0;
     }
 
     // Deceleration phase
     for (int step = 0; step < decel_steps; step++) {
         current_speed = max_speed - (max_speed - min_speed) * step / decel_steps;
-        /*htim3->Instance->CCR1 = current_speed;
-        htim3->Instance->CCR3 = current_speed;*/
         Avancer(current_speed, htim3);
-        HAL_Delay(UPDATE_INTERVAL);
+        HAL_TIM_Base_Start_IT(&htim7);
+        while(timer_count < UPDATE_INTERVAL * 1e3) {
+        	// Wait for update interval
+        }
+        HAL_TIM_Base_Stop_IT(&htim7);
+        timer_count = 0;
     }
 
     // Stop the robot
@@ -147,19 +146,4 @@ void Auto_Square(TIM_HandleTypeDef* htim3) {
         Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED, htim3);
         Auto_Angle(90.0, htim3);
     }
-}
-
-int Calc_ARR(float update_event) {
-	const int psc = 59999, clk = 84e6, factor = 100;
-	int arr = 0;
-
-	// Convert update_event to ms for precision
-	update_event *= factor;
-
-	arr = (clk / (update_event * (psc + 1))) - 1;
-
-	// Adjust ARR from conversion factor
-	//arr /= factor;
-
-	return arr;
 }

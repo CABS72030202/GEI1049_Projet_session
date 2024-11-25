@@ -23,7 +23,7 @@
 #define BACK_FORTH_ID 2
 #define SQUARE_ID 3
 
-#define TRACK_RESOLUTION 2			// Distance per encoder step in mm
+#define TRACK_RESOLUTION 1.3		// Distance per encoder step in mm
 #define TRACK_WIDTH 272     		// Distance between the two tracks in mm
 #define UPDATE_INTERVAL 50			// Time interval for speed updates in ms
 #define CLOCKWISE_FACTOR 53.4522 	// Turning factor
@@ -47,7 +47,6 @@ void Auto_Line(int, int, int, TIM_HandleTypeDef*);
 void Auto_Circle(TIM_HandleTypeDef*);
 void Auto_Back_Forth(TIM_HandleTypeDef*);
 void Auto_Square(TIM_HandleTypeDef*);
-int Calc_ARR(float);
 
 
 #endif /* INC_AUTO_H_ */

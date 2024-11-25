@@ -1,8 +1,7 @@
 ../Core/Src/auto.c:14:5:Get_Mode	1
 ../Core/Src/auto.c:20:7:Get_Mode_String	5
 ../Core/Src/auto.c:43:6:Auto_Angle	3
-../Core/Src/auto.c:84:6:Auto_Line	4
-../Core/Src/auto.c:126:6:Auto_Circle	1
-../Core/Src/auto.c:130:6:Auto_Back_Forth	1
-../Core/Src/auto.c:144:6:Auto_Square	2
-../Core/Src/auto.c:152:5:Calc_ARR	1
+../Core/Src/auto.c:74:6:Auto_Line	7
+../Core/Src/auto.c:125:6:Auto_Circle	1
+../Core/Src/auto.c:129:6:Auto_Back_Forth	1
+../Core/Src/auto.c:143:6:Auto_Square	2
