@@ -15,18 +15,29 @@ uint8_t initcomm2[2] = {0xFB, 0x00};
 
 uint8_t data[6];
 int formatted_data[7];
+int Xdata;
+int Ydata;
+int Cbutton;
+int Zbutton;
 
 
 void Format_Data() {
+
+	/*FROM LAB7*/
 	formatted_data[0] = data[0];
 	formatted_data[1] = data[1];
-	formatted_data[2] = (data[2] << 2) | ((data[5] >> 0) & 0x03);
-	formatted_data[3] = (data[3] << 2) | ((data[5] >> 2) & 0x03);
-	formatted_data[4] = (data[4] << 2) | ((data[5] >> 4) & 0x03);
 	formatted_data[5] = (data[5] & 0x02);
 	if(formatted_data[5] == 2)
 		formatted_data[5] = 1;
 	formatted_data[6] = (data[5] & 0x01);
+
+
+	/*MY DATA*/
+	Xdata = data[0];
+	Ydata = data[1];
+	Cbutton = (data[5] & 0x02);
+	Zbutton = (data[5] & 0x01);
+
 }
 
 
@@ -44,8 +55,9 @@ void MettreDansWhile(){
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, 0x00, 1, HAL_MAX_DELAY);
 	HAL_Delay(10);
 	HAL_I2C_Master_Receive(&hi2c1, NUNCHUK_ADDRESS, data, 6, HAL_MAX_DELAY);
-
 	Format_Data();
+
+
 }
 
 
