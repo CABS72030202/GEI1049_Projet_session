@@ -7,6 +7,8 @@
 
 #include "auto.h"
 
+uint8_t pause = 0;
+uint8_t dip_state = 0;
 uint8_t curr_mode = 0;
 volatile int timer_count = 0;
 float turning_time = 0;
