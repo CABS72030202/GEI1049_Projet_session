@@ -8,7 +8,7 @@
 #include "manette.h"
 
 #define NUNCHUK_ADDRESS (0x52<<1)
-I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c1;
 
 uint8_t initcomm1[2] = {0xF0, 0x55};
 uint8_t initcomm2[2] = {0xFB, 0x00};

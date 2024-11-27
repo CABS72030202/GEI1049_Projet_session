@@ -42,7 +42,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
-
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
@@ -498,13 +497,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 		// Resume if paused
 		if(pause) {
-			pause = pause ^ 1;
+			pause = 0;
 			HAL_TIM_Base_Start_IT(&htim7);
 		}
 
 		// Pause if button pressed while auto mode on
 		else if(curr_mode == dip_state && curr_mode != MANUAL_MODE) {
-			pause = pause ^ 1;
+			pause = 1;
 			HAL_TIM_Base_Stop_IT(&htim7);
 		}
 	}
