@@ -14,7 +14,7 @@ volatile int timer_count = 0;
 float turning_time = 0;
 
 int Get_Mode(int MSB_state, int LSB_state) {
-	static const int id_lookup[4] = {MANUAL_ID, CIRCLE_ID, SQUARE_ID, BACK_FORTH_ID};
+	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE, SQUARE_MODE, BACK_FORTH_MODE};
 	int bin = ((MSB_state & 1) << 1) | (LSB_state & 1);
 	return id_lookup[bin];
 }
@@ -23,16 +23,16 @@ char* Get_Mode_String() {
 	const size_t buffer_size = 8;
 	char* str = malloc(buffer_size);
 	switch(curr_mode) {
-		case MANUAL_ID:
+		case MANUAL_MODE:
 			str = "MANUAL";
 			break;
-		case CIRCLE_ID:
+		case CIRCLE_MODE:
 			str = "CIRCLE";
 			break;
-		case BACK_FORTH_ID:
+		case BACK_FORTH_MODE:
 			str = "LINE";
 			break;
-		case SQUARE_ID:
+		case SQUARE_MODE:
 			str = "SQUARE";
 			break;
 		default:
@@ -126,10 +126,10 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
 
 void Auto_Circle(TIM_HandleTypeDef* htim3) {
 	// Calculate total steps required
-	int total_steps = (int)((PI() * DISTANCE) / TRACK_RESOLUTION);
+	int total_steps = (int)((PI * DISTANCE) / TRACK_RESOLUTION);
 
 	// Calculate wheel inner wheel ratio
-	float ratio = 0.9 * ((int)((2 * PI() * ((DISTANCE / 2) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
+	float ratio = 0.9 * ((int)((2 * PI * ((DISTANCE * 0.5) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
 
 	// Constant speed phase
 	for (int step = 0; step < total_steps; step++) {
