@@ -18,14 +18,15 @@
 #include "gestion_moteurs.h"
 
 // Constants
-#define MANUAL_ID 0
-#define CIRCLE_ID 1
-#define BACK_FORTH_ID 2
-#define SQUARE_ID 3
+#define PI 3.14159
+#define MANUAL_MODE 0
+#define CIRCLE_MODE 1
+#define BACK_FORTH_MODE 2
+#define SQUARE_MODE 3
 
 #define TRACK_RESOLUTION 6.5		// Distance per encoder step in mm
 #define TRACK_WIDTH 272     		// Distance between the two tracks in mm
-#define UPDATE_INTERVAL 50			// Time interval for speed updates in ms
+#define UPDATE_INTERVAL 50			// Time interval for speed updates in ms (time per step)
 #define CLOCKWISE_FACTOR 53.4522 	// Turning factor
 #define COUNTER_CLW_FACTOR 50.0000 	// Turning factor
 

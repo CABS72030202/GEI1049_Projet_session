@@ -33,7 +33,6 @@
 /* USER CODE BEGIN PD */
 #define PULSE_PAR_TOUR 74
 #define CIRCONFERENCE 157 // en mm
-#define PI 3.14159
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -139,21 +138,21 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	if(curr_mode != 0) { 	// Toggle auto mode
+	if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
 		switch(curr_mode) {
-			case CIRCLE_ID:
+			case CIRCLE_MODE:
 				Auto_Circle(&htim3);
 				break;
-			case BACK_FORTH_ID:
+			case BACK_FORTH_MODE:
 				Auto_Back_Forth(&htim3);
 				break;
-			case SQUARE_ID:
+			case SQUARE_MODE:
 				Auto_Square(&htim3);
 				break;
 			default:
 				break;
 		}
-		curr_mode = 0;	// Return to manual mode after drawing shape
+		curr_mode = MANUAL_MODE;	// Return to manual mode after drawing shape
 	}
 
 	else { 	// Manual mode
@@ -504,7 +503,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		}
 
 		// Pause if button pressed while auto mode on
-		else if(curr_mode == dip_state && curr_mode != 0) {
+		else if(curr_mode == dip_state && curr_mode != MANUAL_MODE) {
 			pause = pause ^ 1;
 			HAL_TIM_Base_Stop_IT(&htim7);
 		}
