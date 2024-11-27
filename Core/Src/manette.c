@@ -6,9 +6,12 @@
  */
 
 #include "manette.h"
+#include "gestion_moteurs.h"
+
 
 #define NUNCHUK_ADDRESS (0x52<<1)
 extern I2C_HandleTypeDef hi2c1;
+extern TIM_HandleTypeDef htim3;
 
 uint8_t initcomm1[2] = {0xF0, 0x55};
 uint8_t initcomm2[2] = {0xFB, 0x00};
@@ -20,7 +23,9 @@ int Ydata;
 int Cbutton;
 int Zbutton;
 
-int modeVitesse;
+int modeVitesse = 3;
+float pulseCoeff = 1.96;
+int sendPulseMotor;
 
 
 void Format_Data() {
@@ -50,41 +55,65 @@ void Initialisation_manette(){
 }
 
 
-void MettreDansWhile(){
+void controleRednek(){
 
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, 0x00, 1, HAL_MAX_DELAY);
 	HAL_Delay(10);
 	HAL_I2C_Master_Receive(&hi2c1, NUNCHUK_ADDRESS, data, 6, HAL_MAX_DELAY);
 	Format_Data();
 
+
+
+	if(Xdata && Ydata == 128){
+			Stop(&htim3);
+	}
+
+	else{
+
 	if(modeVitesse==1){
-		Xdata = Xdata * 0.33;
-		Ydata = Ydata * 0.33;
+		Xdata = Xdata * 0.33 * pulseCoeff;
+		Ydata = Ydata * 0.33 * pulseCoeff;
 	}
+
 	if(modeVitesse==2){
-			Xdata = Xdata * 0.33;
-			Ydata = Ydata * 0.33;
+		Xdata = Xdata * 0.66 * pulseCoeff;
+		Ydata = Ydata * 0.66 * pulseCoeff;
 	}
+
+	if(modeVitesse==3){
+		Xdata = Xdata * pulseCoeff;
+		Ydata = Ydata * 0.66 * pulseCoeff;
+	}
+
+
+
+
+	if(Xdata>128){
+		sendPulseMotor = Xdata;
+		Droite(sendPulseMotor,&htim3);
+	}
+
+	else if(Xdata<128) {
+			sendPulseMotor = 330-Xdata;
+			Gauche(sendPulseMotor,&htim3);
+		}
+
+
+	if(Ydata>128){
+		sendPulseMotor = Ydata;
+		Avancer(sendPulseMotor,&htim3);
+	}
+
+	else if(Ydata<128){
+			sendPulseMotor = 330-Ydata;
+			Reculer(sendPulseMotor,&htim3);
+		}
+	}
+
+
+
 
 /*
-
-	if(vitesse == 1){
-		Xdata = Xdata * 0.33;
-		Ydata = Ydata * 0.33;
-	}
-
-
-	if(vitesse == 2){
-		Xdata = Xdata * 0.66;
-		Ydata = Ydata * 0.33;
-	}
-
-
-	if(vitesse == 3){
-		Xdata = Xdata * 0.66;
-		Ydata = Ydata * 0.66;
-	}
-
 
 
 neutral x and y data: 128

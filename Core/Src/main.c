@@ -89,6 +89,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
+  Initialisation_manette();
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -155,6 +157,8 @@ int main(void)
 	}
 
 	else { 	// Manual mode
+
+		controleRednek();
 
 	}
   }
