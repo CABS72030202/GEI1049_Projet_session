@@ -125,7 +125,28 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
 }
 
 void Auto_Circle(TIM_HandleTypeDef* htim3) {
+	// Calculate total steps required
+	int total_steps = (int)((PI() * DISTANCE) / TRACK_RESOLUTION);
 
+	// Calculate wheel inner wheel ratio
+	float ratio = 0.9 * ((int)((2 * PI() * ((DISTANCE / 2) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
+
+	// Constant speed phase
+	for (int step = 0; step < total_steps; step++) {
+		htim3->Instance -> CCR2 = 0;
+		htim3->Instance -> CCR4 = 0;
+		htim3->Instance -> CCR1 = BASE_SPEED;
+		htim3->Instance -> CCR3 = htim3->Instance -> CCR1 * ratio;
+		HAL_TIM_Base_Start_IT(&htim7);
+		while(timer_count < UPDATE_INTERVAL * 1e3) {
+			// Wait for update interval
+	    }
+	    HAL_TIM_Base_Stop_IT(&htim7);
+	    timer_count = 0;
+	}
+
+	// Stop the robot
+	Stop(htim3);
 }
 
 void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {

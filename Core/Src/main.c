@@ -146,6 +146,8 @@ int main(void)
 			case SQUARE_ID:
 				Auto_Square(&htim3);
 				break;
+			default:
+				break;
 		}
 		curr_mode = 0;	// Return to manual mode after drawing shape
 	}
@@ -455,10 +457,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	if(GPIO_Pin == Blue_Button_Pin) {
 		Stop(&htim3);
-		curr_mode = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
-	}
+		dip_state = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 
-} //fonctionne
+		// Resume if paused
+		if(pause) {
+			pause = pause ^ 1;
+			HAL_TIM_Base_Start_IT(&htim7);
+		}
+
+		// Pause if button pressed while auto mode on
+		else if(curr_mode == dip_state && curr_mode != 0) {
+			pause = pause ^ 1;
+			HAL_TIM_Base_Stop_IT(&htim7);
+		}
+	}
+}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {

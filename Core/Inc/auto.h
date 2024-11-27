@@ -23,18 +23,19 @@
 #define BACK_FORTH_ID 2
 #define SQUARE_ID 3
 
-#define TRACK_RESOLUTION 1.3		// Distance per encoder step in mm
+#define TRACK_RESOLUTION 6.5		// Distance per encoder step in mm
 #define TRACK_WIDTH 272     		// Distance between the two tracks in mm
 #define UPDATE_INTERVAL 50			// Time interval for speed updates in ms
 #define CLOCKWISE_FACTOR 53.4522 	// Turning factor
-#define COUNTER_CLW_FACTOR 0.04410 	// Turning factor
+#define COUNTER_CLW_FACTOR 50.0000 	// Turning factor
 
 #define BASE_SPEED 450
-#define CIRCLE_CIRCUMFERENCE 6280
-#define DISTANCE 200
+#define DISTANCE 1000
 
 // Variables
-extern uint8_t curr_mode;			// Current mode				// Temporal counter
+extern uint8_t pause;				// Detect blue button press
+extern uint8_t dip_state;			// Current dipswitch state
+extern uint8_t curr_mode;			// Current mode
 extern TIM_HandleTypeDef htim7;
 extern volatile int timer_count;	// Elapsed time in µs
 extern float turning_time;			// Target time in sec
