@@ -21,7 +21,7 @@ int Zbutton;
 
 int modeVitesse = 3;
 float pulseCoeff = 1.96;
-int maxInverse = 250;
+int maxInverse = 500;
 int sendPulseMotor;
 
 int toggle;
@@ -64,12 +64,22 @@ void Controller(){
 	HAL_I2C_Master_Receive(&hi2c1, NUNCHUK_ADDRESS, data, 6, HAL_MAX_DELAY);
 	Format_Data();
 
+	if(Xdata == 0){
+		Xdata = 1;
+	}
+	if(Ydata == 0){
+		Ydata = 1;
+	}
+
+	if(Cbutton == 0){
+				ToggleModeMan();
+			}
 
 
-	if(Cbutton == 1){
+	if(Cbutton == 2){
 
 
-		if(Xdata && Ydata == 128){
+		if(Xdata == 128 && Ydata == 128){
 				Stop(&htim3);
 		}
 
@@ -140,6 +150,10 @@ void ToggleModeVit() {
 	else {
 		modeVitesse++;
 	}
+}
+
+void ToggleModeMan() {
+	Cbutton = Cbutton ^ 2;
 }
 
 
