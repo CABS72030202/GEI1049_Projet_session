@@ -25,7 +25,10 @@ int Zbutton;
 
 int modeVitesse = 3;
 float pulseCoeff = 1.96;
+int maxInverse = 250;
 int sendPulseMotor;
+
+int toggle;
 
 
 void Format_Data() {
@@ -40,8 +43,12 @@ void Format_Data() {
 	/*MY DATA*/
 	Xdata = data[0];
 	Ydata = data[1];
+	Xpulse = data[0];
+	Ypulse = data[1];
 	Cbutton = (data[5] & 0x02);
 	Zbutton = (data[5] & 0x01);
+	/* neutral x and y data: 128
+	max x and y data: 1-254 */
 
 }
 
@@ -55,7 +62,7 @@ void Initialisation_manette(){
 }
 
 
-void controleRednek(){
+void Controler(){
 
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, 0x00, 1, HAL_MAX_DELAY);
 	HAL_Delay(10);
@@ -64,65 +71,81 @@ void controleRednek(){
 
 
 
-	if(Xdata && Ydata == 128){
-			Stop(&htim3);
+	if(Cbutton == 1){
+
+
+		if(Xdata && Ydata == 128){
+				Stop(&htim3);
+		}
+
+		else{
+
+			/* Adjustment of data according to mode */
+
+		if(modeVitesse==1){
+			Xpulse = Xdata * 0.33 * pulseCoeff;
+			Ypulse = Ydata * 0.33 * pulseCoeff;
+			maxInverse = maxInverse * 0.33;
+		}
+
+		if(modeVitesse==2){
+			Xpulse = Xdata * 0.66 * pulseCoeff;
+			Ypulse = Ydata * 0.66 * pulseCoeff;
+			maxInverse = maxInverse * 0.66;
+		}
+
+		if(modeVitesse==3){
+			Xpulse = Xdata * pulseCoeff;
+			Ypulse = Ydata * pulseCoeff;
+		}
+
+
+		/* Sending pulse to motor */
+
+		if(Xdata>128){
+			sendPulseMotor = Xpulse;
+			Droite(sendPulseMotor,&htim3);
+		}
+
+		else if(Xdata<128) {
+				sendPulseMotor = maxInverse - Xpulse;
+				Gauche(sendPulseMotor,&htim3);
+			}
+
+
+		if(Ydata>128){
+			sendPulseMotor = Ypulse;
+			Avancer(sendPulseMotor,&htim3);
+		}
+
+		else if(Ydata<128){
+				sendPulseMotor = maxInverse - Ypulse;
+				Reculer(sendPulseMotor,&htim3);
+			}
+		}
+
+
+		if(Zbutton == 0){
+			ToggleModeVit(modeVitesse);
+		}
 	}
 
 	else{
-
-	if(modeVitesse==1){
-		Xdata = Xdata * 0.33 * pulseCoeff;
-		Ydata = Ydata * 0.33 * pulseCoeff;
+		Stop(&htim3);
 	}
-
-	if(modeVitesse==2){
-		Xdata = Xdata * 0.66 * pulseCoeff;
-		Ydata = Ydata * 0.66 * pulseCoeff;
-	}
-
-	if(modeVitesse==3){
-		Xdata = Xdata * pulseCoeff;
-		Ydata = Ydata * 0.66 * pulseCoeff;
-	}
-
-
-
-
-	if(Xdata>128){
-		sendPulseMotor = Xdata;
-		Droite(sendPulseMotor,&htim3);
-	}
-
-	else if(Xdata<128) {
-			sendPulseMotor = 330-Xdata;
-			Gauche(sendPulseMotor,&htim3);
-		}
-
-
-	if(Ydata>128){
-		sendPulseMotor = Ydata;
-		Avancer(sendPulseMotor,&htim3);
-	}
-
-	else if(Ydata<128){
-			sendPulseMotor = 330-Ydata;
-			Reculer(sendPulseMotor,&htim3);
-		}
-	}
-
-
-
-
-/*
-
-
-neutral x and y data: 128
-max x and y data: 1-254
-
-
-*/
-
-
 }
+
+void ToggleModeVit(modeVitesse){
+
+	if(modeVitesse == 3){
+		modeVitesse = 1;
+			return;
+		}
+		else{
+			modeVitesse++;
+		}
+}
+
+
 
 

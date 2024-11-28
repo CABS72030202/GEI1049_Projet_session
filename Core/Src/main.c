@@ -157,9 +157,7 @@ int main(void)
 	}
 
 	else { 	// Manual mode
-
-		controleRednek();
-
+		Controler();
 	}
   }
   /* USER CODE END 3 */
