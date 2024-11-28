@@ -134,8 +134,7 @@ int main(void)
       Error_Handler();
   }
 
-  /*LCD_Init(&LCD_Init_OK);*/
-
+  //LCD_Init(&LCD_Init_OK);
   curr_mode = MANUAL_MODE;
   /* USER CODE END 2 */
 
@@ -236,7 +235,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			Resume(&htim3);
 
 		// Pause if button pressed while auto mode on
-		else if(curr_mode == dip_state && curr_mode != MANUAL_MODE)
+		else if(curr_mode != MANUAL_MODE)
 			Pause(&htim3);
 
 		// Change current mode only on manual mode
