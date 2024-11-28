@@ -17,6 +17,7 @@ int Ydata;
 int Xpulse;
 int Ypulse;
 int Cbutton;
+int ToggleC = 1;
 int Zbutton;
 
 int modeVitesse = 3;
@@ -81,7 +82,7 @@ void Controller(){
 	}
 
 
-	if(Cbutton == 2){
+	if(ToggleC == 1){
 
 
 		if(Xdata == 128 && Ydata == 128){
@@ -152,11 +153,11 @@ void ToggleModeVit() {
 
 void ToggleModeMan() {
 
-	if(Cbutton == 2){
-		Cbutton = 0;
+	if(ToggleC == 1){
+		ToggleC = 0;
 	}
-	if(Cbutton == 0){
-		Cbutton = 2;
+	else if(ToggleC == 0){
+		ToggleC = 1;
 	}
 
 }

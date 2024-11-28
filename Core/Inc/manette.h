@@ -26,6 +26,7 @@ extern int Ydata;
 extern int Xpulse;
 extern int Ypulse;
 extern int Cbutton;
+extern int ToggleC;
 extern int Zbutton;
 
 extern int modeVitesse;

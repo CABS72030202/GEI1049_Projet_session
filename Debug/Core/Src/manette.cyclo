@@ -1,5 +1,5 @@
-../Core/Src/manette.c:29:6:Format_Data	2
-../Core/Src/manette.c:51:6:Initialisation_manette	1
-../Core/Src/manette.c:60:6:Controller	15
-../Core/Src/manette.c:144:6:ToggleModeVit	2
-../Core/Src/manette.c:153:6:ToggleModeMan	3
+../Core/Src/manette.c:30:6:Format_Data	2
+../Core/Src/manette.c:52:6:Initialisation_manette	1
+../Core/Src/manette.c:61:6:Controller	15
+../Core/Src/manette.c:145:6:ToggleModeVit	2
+../Core/Src/manette.c:154:6:ToggleModeMan	3
