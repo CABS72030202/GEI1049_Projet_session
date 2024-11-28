@@ -65,19 +65,14 @@ void Controller(){
 	HAL_I2C_Master_Receive(&hi2c1, NUNCHUK_ADDRESS, data, 6, HAL_MAX_DELAY);
 	Format_Data();
 
-	if(Xdata == 0){
-		Xdata = 1;
-	}
-	if(Ydata == 0){
-		Ydata = 1;
-	}
-
 
 
 	if(Cbutton == 0){
+		HAL_Delay(10);
 		ToggleModeMan();
 	}
 	if(Zbutton == 0){
+		HAL_Delay(10);
 		ToggleModeVit();
 	}
 
