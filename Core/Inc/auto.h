@@ -45,7 +45,8 @@ extern int current_speed;
 extern TIM_HandleTypeDef htim7;
 extern volatile int timer_count;	// Elapsed time in µs
 extern float turning_time;			// Target time in sec
-extern int save[4];						// Save CCR register values on pause
+extern int save[4];					// Save CCR register values on pause
+extern float ratio;
 
 // Prototypes
 int Get_Mode(int, int);				// Converts the binary input into active mode

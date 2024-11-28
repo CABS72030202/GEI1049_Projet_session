@@ -19,6 +19,7 @@ int current_speed = 0;
 volatile int timer_count = 0;
 float turning_time = 0;
 int save[4] = {0, 0, 0, 0};
+float ratio = 0;
 
 int Get_Mode(int MSB_state, int LSB_state) {
 	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE,  BACK_FORTH_MODE, SQUARE_MODE};
@@ -160,25 +161,26 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 	// Initial setup
 	if(timer_count == 0) {
 
-		// Calculate total steps required
-		int total_steps = (int)((PI * DISTANCE) / TRACK_RESOLUTION);
+		// Calculate total outer wheel distance
+		float outer_circumference = (PI*DISTANCE) / TRACK_RESOLUTION;//785
+		float inner_circumference = outer_circumference - TRACK_WIDTH;//513
 
-		// Calculate required time
-		turning_time = (BASE_SPEED / total_steps) * 1e6;
+		// Calculate total time
+		total_time = (int)((outer_circumference / BASE_SPEED) * 1e7);//17.4s
 
-		// Calculate wheel inner wheel ratio
-		float ratio = 0.9 * ((int)((2 * PI * ((DISTANCE * 0.5) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
+		// Calculate wheel inner wheel speed
+		ratio = 0.9 * (inner_circumference / outer_circumference);//0.588
 
 		// Constant speed
 		htim3->Instance -> CCR2 = 0;
 		htim3->Instance -> CCR4 = 0;
 		htim3->Instance -> CCR1 = BASE_SPEED;
-		htim3->Instance -> CCR3 = htim3->Instance -> CCR1 * ratio;
+		htim3->Instance -> CCR3 = (ratio * BASE_SPEED);
 		HAL_TIM_Base_Start_IT(&htim7);
 	}
 
 	// Stop when finished
-	if(timer_count > (int)turning_time) {
+	if(timer_count > (int)total_time) {
 
 		// Stop timer
 		HAL_TIM_Base_Stop_IT(&htim7);
@@ -188,6 +190,9 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 
 		// Reset temporal counter
 		timer_count = 0;
+
+		// End of sequence : reset current step and set to manual mode after drawing shape
+		curr_mode = MANUAL_MODE;
 	}
 
 	return;

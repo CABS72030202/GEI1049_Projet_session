@@ -134,7 +134,7 @@ int main(void)
       Error_Handler();
   }
 
-  LCD_Init(&LCD_Init_OK);
+  //LCD_Init(&LCD_Init_OK);
   curr_mode = MANUAL_MODE;
   /* USER CODE END 2 */
 
