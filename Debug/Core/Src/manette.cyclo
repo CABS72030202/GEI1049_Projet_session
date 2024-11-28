@@ -1,3 +1,4 @@
-../Core/Src/manette.c:24:6:Format_Data	2
-../Core/Src/manette.c:44:6:Initialisation_manette	1
-../Core/Src/manette.c:53:6:MettreDansWhile	1
+../Core/Src/manette.c:36:6:Format_Data	2
+../Core/Src/manette.c:58:6:Initialisation_manette	1
+../Core/Src/manette.c:67:6:Controler	13
+../Core/Src/manette.c:143:6:ToggleModeVit	2

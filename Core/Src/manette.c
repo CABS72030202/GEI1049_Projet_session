@@ -20,6 +20,8 @@ uint8_t data[6];
 int formatted_data[7];
 int Xdata;
 int Ydata;
+int Xpulse;
+int Ypulse;
 int Cbutton;
 int Zbutton;
 
@@ -126,27 +128,25 @@ void Controler(){
 
 
 		if(Zbutton == 0){
-			ToggleModeVit(modeVitesse);
+			ToggleModeVit();
 		}
 	}
 	else{
 		Stop(&htim3);
 		if(Zbutton == 0){
-			ToggleModeVit(modeVitesse);
+			ToggleModeVit();
 		}
 
 	}
 }
 
-void ToggleModeVit(modeVitesse){
-
-	if(modeVitesse == 3){
+void ToggleModeVit() {
+	if(modeVitesse == 3) {
 		modeVitesse = 1;
-			return;
-		}
-		else{
-			modeVitesse++;
-		}
+	}
+	else {
+		modeVitesse++;
+	}
 }
 
 

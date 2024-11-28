@@ -27,7 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "vitesse_affichage.h"
-#include "image.h"
+//#include "image.h"
 #include "LCD_Test.h"
 #include "LCD_2inch.h"
 #include "DEV_Config.h"
