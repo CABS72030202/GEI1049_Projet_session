@@ -24,9 +24,8 @@
 #define BACK_FORTH_MODE 2
 #define SQUARE_MODE 3
 
-#define TRACK_RESOLUTION 6.5		// Distance per encoder step in mm
+#define TRACK_RESOLUTION 4			// Distance per encoder step in mm
 #define TRACK_WIDTH 272     		// Distance between the two tracks in mm
-#define UPDATE_INTERVAL 50			// Time interval for speed updates in ms (time per step)
 #define CLOCKWISE_FACTOR 53.4522 	// Turning factor
 #define COUNTER_CLW_FACTOR 50.0000 	// Turning factor
 
@@ -37,9 +36,16 @@
 extern uint8_t pause;				// Detect blue button press
 extern uint8_t dip_state;			// Current dipswitch state
 extern uint8_t curr_mode;			// Current mode
+extern uint8_t curr_step;			// Current step to execute
+extern int total_time;
+extern int accel_time;
+extern int decel_time;
+extern int mid_time;
+extern int current_speed;
 extern TIM_HandleTypeDef htim7;
 extern volatile int timer_count;	// Elapsed time in µs
 extern float turning_time;			// Target time in sec
+extern int save[4];						// Save CCR register values on pause
 
 // Prototypes
 int Get_Mode(int, int);				// Converts the binary input into active mode
@@ -49,6 +55,7 @@ void Auto_Line(int, int, int, TIM_HandleTypeDef*);
 void Auto_Circle(TIM_HandleTypeDef*);
 void Auto_Back_Forth(TIM_HandleTypeDef*);
 void Auto_Square(TIM_HandleTypeDef*);
-
+void Pause(TIM_HandleTypeDef*);
+void Resume(TIM_HandleTypeDef*);
 
 #endif /* INC_AUTO_H_ */

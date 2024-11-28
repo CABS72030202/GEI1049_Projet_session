@@ -1,7 +1,9 @@
-../Core/Src/auto.c:16:5:Get_Mode	1
-../Core/Src/auto.c:22:7:Get_Mode_String	5
-../Core/Src/auto.c:45:6:Auto_Angle	3
-../Core/Src/auto.c:76:6:Auto_Line	7
-../Core/Src/auto.c:127:6:Auto_Circle	3
-../Core/Src/auto.c:152:6:Auto_Back_Forth	1
-../Core/Src/auto.c:166:6:Auto_Square	2
+../Core/Src/auto.c:23:5:Get_Mode	1
+../Core/Src/auto.c:29:7:Get_Mode_String	5
+../Core/Src/auto.c:52:6:Auto_Angle	4
+../Core/Src/auto.c:94:6:Auto_Line	7
+../Core/Src/auto.c:159:6:Auto_Circle	3
+../Core/Src/auto.c:196:6:Auto_Back_Forth	5
+../Core/Src/auto.c:228:6:Auto_Square	4
+../Core/Src/auto.c:256:6:Pause	1
+../Core/Src/auto.c:275:6:Resume	1

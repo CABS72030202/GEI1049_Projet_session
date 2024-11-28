@@ -148,10 +148,7 @@ int main(void)
 			case SQUARE_MODE:
 				Auto_Square(&htim3);
 				break;
-			default:
-				break;
 		}
-		curr_mode = MANUAL_MODE;	// Return to manual mode after drawing shape
 	}
 
 	else { 	// Manual mode
@@ -492,20 +489,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 
 	if(GPIO_Pin == Blue_Button_Pin) {
-		Stop(&htim3);
 		dip_state = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 
 		// Resume if paused
-		if(pause) {
-			pause = 0;
-			HAL_TIM_Base_Start_IT(&htim7);
-		}
+		if(pause)
+			Resume(&htim3);
 
 		// Pause if button pressed while auto mode on
-		else if(curr_mode == dip_state && curr_mode != MANUAL_MODE) {
-			pause = 1;
-			HAL_TIM_Base_Stop_IT(&htim7);
-		}
+		else if(curr_mode == dip_state && curr_mode != MANUAL_MODE)
+			Pause(&htim3);
+
+		// Change current mode only on manual mode
+		if(curr_mode == MANUAL_MODE)
+			curr_mode = dip_state;
 	}
 }
 

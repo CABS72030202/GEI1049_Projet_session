@@ -10,11 +10,18 @@
 uint8_t pause = 0;
 uint8_t dip_state = 0;
 uint8_t curr_mode = 0;
+uint8_t curr_step = 1;
+int total_time = 0;
+int accel_time = 0;
+int decel_time = 0;
+int mid_time = 0;
+int current_speed = 0;
 volatile int timer_count = 0;
 float turning_time = 0;
+int save[4] = {0, 0, 0, 0};
 
 int Get_Mode(int MSB_state, int LSB_state) {
-	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE, SQUARE_MODE, BACK_FORTH_MODE};
+	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE,  BACK_FORTH_MODE, SQUARE_MODE};
 	int bin = ((MSB_state & 1) << 1) | (LSB_state & 1);
 	return id_lookup[bin];
 }
@@ -43,130 +50,241 @@ char* Get_Mode_String() {
 }
 
 void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
-    // Calculate the duration for the turn
-    turning_time = fabs(value) * TRACK_WIDTH;
+	// Initial setup
+	if(timer_count == 0) {
+		// Calculate the duration for the turn
+		turning_time = fabs(value) * TRACK_WIDTH;
 
-    // Determine direction of turn
-    if (value > 0) {
-    	turning_time /= (360.0 * CLOCKWISE_FACTOR);
-        Droite(BASE_SPEED, htim3);
-    } else {
-    	turning_time /= (360.0 * COUNTER_CLW_FACTOR);
-    	Gauche(BASE_SPEED, htim3);
-    }
+		// Determine direction of turn
+		if (value > 0) {
+			turning_time /= (360.0 * CLOCKWISE_FACTOR);
+			Droite(BASE_SPEED, htim3);
+		}
+		else {
+			turning_time /= (360.0 * COUNTER_CLW_FACTOR);
+			Gauche(BASE_SPEED, htim3);
+		}
 
-    // Convert turning time in µs
-    //turning_time = 20;
-    turning_time *= 1e6;
+		// Convert turning time in µs
+		turning_time *= 1e6;
 
-    // Delay for calculated turning time
-    HAL_TIM_Base_Start_IT(&htim7);
-    while(timer_count < (int)turning_time) {
-    	// Wait
-    }
-    HAL_TIM_Base_Stop_IT(&htim7);
+		// Start timer
+	    HAL_TIM_Base_Start_IT(&htim7);
+	}
 
-    // Reset temporal counter
-    timer_count = 0;
+    // Stop when finished
+	if(timer_count > (int)turning_time) {
 
-    // Stop the motors
-    Stop(htim3);
+		// Stop timer
+		HAL_TIM_Base_Stop_IT(&htim7);
+
+		// Stop the motors
+		Stop(htim3);
+
+		// Reset temporal counter
+		timer_count = 0;
+
+		// Ready for next step
+		curr_step++;
+	}
+
+	return;
 }
 
 void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3) {
-    // Calculate total steps required
-    int total_steps = (int)(dist / TRACK_RESOLUTION);
+    // Constants
+    const float accel_fraction = 0.4; // 40% of total time for acceleration
+    const float decel_fraction = 0.4; // 40% of total time for deceleration
 
-    // Split into acceleration, constant speed, and deceleration
-    int accel_steps = 2 * (total_steps / 5);
-    int decel_steps = accel_steps;
-    int mid_steps = total_steps - accel_steps - decel_steps;
+    // Initial setup
+    if (timer_count == 0) {
+    	// Calculate total pulses required
+    	int total_pulses = (int)(dist / TRACK_RESOLUTION);
 
-    // Initialize speed
-    int current_speed = min_speed;
+        // Calculate total time
+        turning_time = (min_speed + max_speed) / 2.0;
+        total_time = (int)((total_pulses / turning_time) * 1e7);
+
+        // Calculate time for each phase
+        accel_time = (int)(total_time * accel_fraction);
+        decel_time = (int)(total_time * decel_fraction);
+        mid_time = total_time - accel_time - decel_time;
+
+        // Start timer
+        HAL_TIM_Base_Start_IT(&htim7);
+    }
 
     // Acceleration phase
-    for (int step = 0; step < accel_steps; step++) {
-        current_speed = min_speed + (max_speed - min_speed) * step / accel_steps;
-        Avancer(current_speed, htim3);
-        HAL_TIM_Base_Start_IT(&htim7);
-        while(timer_count < UPDATE_INTERVAL * 1e3) {
-        	// Wait for update interval
-        }
-        HAL_TIM_Base_Stop_IT(&htim7);
-        timer_count = 0;
+    if (timer_count < accel_time) {
+        current_speed = min_speed + (max_speed - min_speed) * timer_count / accel_time;
     }
 
     // Constant speed phase
-    for (int step = 0; step < mid_steps; step++) {
-    	Avancer(max_speed, htim3);
-    	HAL_TIM_Base_Start_IT(&htim7);
-    	while(timer_count < UPDATE_INTERVAL * 1e3) {
-    		// Wait for update interval
-    	}
-    	HAL_TIM_Base_Stop_IT(&htim7);
-    	timer_count = 0;
+    else if (timer_count < accel_time + mid_time) {
+        current_speed = max_speed;
     }
 
     // Deceleration phase
-    for (int step = 0; step < decel_steps; step++) {
-        current_speed = max_speed - (max_speed - min_speed) * step / decel_steps;
-        Avancer(current_speed, htim3);
-        HAL_TIM_Base_Start_IT(&htim7);
-        while(timer_count < UPDATE_INTERVAL * 1e3) {
-        	// Wait for update interval
-        }
-        HAL_TIM_Base_Stop_IT(&htim7);
-        timer_count = 0;
+    else if (timer_count < total_time) {
+        int decel_time_elapsed = timer_count - (accel_time + mid_time);
+        current_speed = max_speed - (max_speed - min_speed) * decel_time_elapsed / decel_time;
     }
 
-    // Stop the robot
-    Stop(htim3);
+    // Stop when finished
+    else {
+        // Stop timer
+        HAL_TIM_Base_Stop_IT(&htim7);
+
+        // Stop the motors
+        Stop(htim3);
+
+        // Reset temporal counter
+        timer_count = 0;
+
+        // Ready for next step
+        curr_step++;
+
+        // Exit
+        return;
+    }
+
+    // Adjust speed every iteration
+    if(!pause)
+    	Avancer(current_speed, htim3);
+
+    return;
 }
 
+
 void Auto_Circle(TIM_HandleTypeDef* htim3) {
-	// Calculate total steps required
-	int total_steps = (int)((PI * DISTANCE) / TRACK_RESOLUTION);
+	// Initial setup
+	if(timer_count == 0) {
 
-	// Calculate wheel inner wheel ratio
-	float ratio = 0.9 * ((int)((2 * PI * ((DISTANCE * 0.5) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
+		// Calculate total steps required
+		int total_steps = (int)((PI * DISTANCE) / TRACK_RESOLUTION);
 
-	// Constant speed phase
-	for (int step = 0; step < total_steps; step++) {
+		// Calculate required time
+		turning_time = (BASE_SPEED / total_steps) * 1e6;
+
+		// Calculate wheel inner wheel ratio
+		float ratio = 0.9 * ((int)((2 * PI * ((DISTANCE * 0.5) - TRACK_WIDTH)) / TRACK_RESOLUTION) / total_steps);
+
+		// Constant speed
 		htim3->Instance -> CCR2 = 0;
 		htim3->Instance -> CCR4 = 0;
 		htim3->Instance -> CCR1 = BASE_SPEED;
 		htim3->Instance -> CCR3 = htim3->Instance -> CCR1 * ratio;
 		HAL_TIM_Base_Start_IT(&htim7);
-		while(timer_count < UPDATE_INTERVAL * 1e3) {
-			// Wait for update interval
-	    }
-	    HAL_TIM_Base_Stop_IT(&htim7);
-	    timer_count = 0;
 	}
 
-	// Stop the robot
-	Stop(htim3);
+	// Stop when finished
+	if(timer_count > (int)turning_time) {
+
+		// Stop timer
+		HAL_TIM_Base_Stop_IT(&htim7);
+
+		// Stop the motors
+		Stop(htim3);
+
+		// Reset temporal counter
+		timer_count = 0;
+	}
+
+	return;
 }
 
 void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {
-    // Move forward 1 meter
-    Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+	// Manage ongoing step
+	switch(curr_step) {
+	case 1:
+		// Step 1: Move forward 1 meter
+		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+		break;
 
-    // Turn 180 degrees
-    Auto_Angle(180.0, htim3);
+	case 2:
+		// Step 2: Turn 180 degrees
+		Auto_Angle(180.0, htim3);
+		break;
 
-    // Move backward 1 meter
-    Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+	case 3:
+		// Step 3: Move backward 1 meter
+		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+		break;
 
-    // Turn 180 degrees again to face the original direction
-    Auto_Angle(180.0, htim3);
+	case 4:
+		// Step 4: Turn 180 degrees again to face the original direction
+	    Auto_Angle(180.0, htim3);
+		break;
+
+	default:
+		// End of sequence : reset current step and set to manual mode after drawing shape
+		curr_step = 1;
+		curr_mode = MANUAL_MODE;
+		break;
+	}
+	return;
 }
 
 void Auto_Square(TIM_HandleTypeDef* htim3) {
-    // Move forward and turn 90 degrees four times
-    for (int i = 0; i < 4; i++) {
-        Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED, htim3);
-        Auto_Angle(90.0, htim3);
-    }
+	// Manage ongoing step
+	switch(curr_step) {
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+		// Odd steps: Move forward
+		Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED, htim3);
+		break;
+
+	case 2:
+	case 4:
+	case 6:
+	case 8:
+		// Even steps: Turn 90 degrees
+		Auto_Angle(90.0, htim3);
+		break;
+
+	default:
+		// End of sequence : reset current step and set to manual mode after drawing shape
+		curr_step = 1;
+		curr_mode = MANUAL_MODE;
+		break;
+	}
+	return;
+}
+
+void Pause(TIM_HandleTypeDef* htim3) {
+	pause = pause ^ 1;
+
+	// Save currrent CCR values
+	save[0] = htim3->Instance -> CCR1;
+	save[1] = htim3->Instance -> CCR2;
+	save[2] = htim3->Instance -> CCR3;
+	save[3] = htim3->Instance -> CCR4;
+
+	// Stop
+	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_4);
+	HAL_TIM_Base_Stop_IT(&htim7);
+
+	return;
+}
+
+void Resume(TIM_HandleTypeDef* htim3) {
+	pause = pause ^ 1;
+
+	// Restore saved CCR values
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_4);
+	htim3->Instance -> CCR1 = save[0];
+	htim3->Instance -> CCR2 = save[1];
+	htim3->Instance -> CCR3 = save[2];
+	htim3->Instance -> CCR4 = save[3];
+	HAL_TIM_Base_Start_IT(&htim7);
+
+	return;
 }
