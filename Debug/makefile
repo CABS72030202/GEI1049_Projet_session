@@ -9,6 +9,12 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include User/image/subdir.mk
+-include User/example/subdir.mk
+-include User/LCD/subdir.mk
+-include User/GUI_DEV/subdir.mk
+-include User/Fonts/subdir.mk
+-include User/Config/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
@@ -60,8 +66,8 @@ all: main-build
 main-build: GEI1049_Projet_session.elf secondary-outputs
 
 # Tool invocations
-GEI1049_Projet_session.elf GEI1049_Projet_session.map: $(OBJS) $(USER_OBJS) C:\Users\sebas\STM32CubeIDE\workspace_1.16.0\GEI1049_Projet_session\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "GEI1049_Projet_session.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\sebas\STM32CubeIDE\workspace_1.16.0\GEI1049_Projet_session\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GEI1049_Projet_session.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+GEI1049_Projet_session.elf GEI1049_Projet_session.map: $(OBJS) $(USER_OBJS) C:\STM32CubeIDE\Workspace\GitHub\GEI1049_Projet_session\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "GEI1049_Projet_session.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\STM32CubeIDE\Workspace\GitHub\GEI1049_Projet_session\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GEI1049_Projet_session.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
