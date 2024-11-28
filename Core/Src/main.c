@@ -135,6 +135,7 @@ int main(void)
   }
 
   LCD_Init(&LCD_Init_OK);
+  curr_mode = MANUAL_MODE;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -160,7 +161,7 @@ int main(void)
 	}
 
 	else { 	// Manual mode
-		Controler();
+		Controller();
 	}
   }
   /* USER CODE END 3 */

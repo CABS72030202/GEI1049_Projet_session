@@ -6,12 +6,6 @@
  */
 
 #include "manette.h"
-#include "gestion_moteurs.h"
-
-
-#define NUNCHUK_ADDRESS (0x52<<1)
-extern I2C_HandleTypeDef hi2c1;
-extern TIM_HandleTypeDef htim3;
 
 uint8_t initcomm1[2] = {0xF0, 0x55};
 uint8_t initcomm2[2] = {0xFB, 0x00};
@@ -31,7 +25,6 @@ int maxInverse = 250;
 int sendPulseMotor;
 
 int toggle;
-
 
 void Format_Data() {
 	/*FROM LAB7*/
@@ -64,7 +57,7 @@ void Initialisation_manette(){
 }
 
 
-void Controler(){
+void Controller(){
 
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, 0x00, 1, HAL_MAX_DELAY);
 	HAL_Delay(10);
