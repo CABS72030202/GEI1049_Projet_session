@@ -71,9 +71,14 @@ void Controller(){
 		Ydata = 1;
 	}
 
+
+
 	if(Cbutton == 0){
-				ToggleModeMan();
-			}
+		ToggleModeMan();
+	}
+	if(Zbutton == 0){
+		ToggleModeVit();
+	}
 
 
 	if(Cbutton == 2){
@@ -128,20 +133,13 @@ void Controller(){
 				Reculer(sendPulseMotor,&htim3);
 			}
 		}
-
-
-		if(Zbutton == 0){
-			ToggleModeVit();
-		}
 	}
 	else{
 		Stop(&htim3);
-		if(Zbutton == 0){
-			ToggleModeVit();
-		}
-
 	}
+
 }
+
 
 void ToggleModeVit() {
 	if(modeVitesse == 3) {
@@ -153,7 +151,14 @@ void ToggleModeVit() {
 }
 
 void ToggleModeMan() {
-	Cbutton = Cbutton ^ 2;
+
+	if(Cbutton == 2){
+		Cbutton = 0;
+	}
+	if(Cbutton == 0){
+		Cbutton = 2;
+	}
+
 }
 
 

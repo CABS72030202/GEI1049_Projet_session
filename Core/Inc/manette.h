@@ -39,5 +39,6 @@ void Format_Data();
 void Initialisation_manette();
 void Controller();
 void ToggleModeVit();
+void ToggleModeMan();
 
 #endif /* INC_MANETTE_H_ */
