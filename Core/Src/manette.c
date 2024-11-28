@@ -129,9 +129,12 @@ void Controler(){
 			ToggleModeVit(modeVitesse);
 		}
 	}
-
 	else{
 		Stop(&htim3);
+		if(Zbutton == 0){
+			ToggleModeVit(modeVitesse);
+		}
+
 	}
 }
 
