@@ -27,7 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "vitesse_affichage.h"
-//#include "image.h"
+#include "image.h"
 #include "LCD_Test.h"
 #include "LCD_2inch.h"
 #include "DEV_Config.h"
@@ -56,9 +56,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint16_t arrTimerVitesse = 200-1, nbPulseD = 0, nbPulseG = 0;
+volatile uint16_t arrTimerVitesse = 0, nbPulseD = 0, nbPulseG = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
-uint8_t LCD_Init_OK = 0; //JM
+uint8_t LCD_Init_OK = 0, delais_LCD = 0;
+int encod_D = 0, encod_G = 0;
+
 
 /* USER CODE END PV */
 
@@ -133,9 +135,9 @@ int main(void)
   {
       Error_Handler();
   }
-
-  //LCD_Init(&LCD_Init_OK);
   curr_mode = MANUAL_MODE;
+  LCD_Init(&LCD_Init_OK);
+  arrTimerVitesse = __HAL_TIM_GET_AUTORELOAD(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,6 +149,8 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
+		LCD_Manuel(0);
+		LCD_Mode();
 		switch(curr_mode) {
 			case CIRCLE_MODE:
 				Auto_Circle(&htim3);
@@ -161,6 +165,7 @@ int main(void)
 	}
 
 	else { 	// Manual mode
+
 		Controller();
 	}
   }
@@ -253,7 +258,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     	nbPulseD = 0 ;
     	nbPulseG = 0;
-    	//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    	delais_LCD++;
+
+    	if(LCD_Init_OK && delais_LCD > 7)
+    	{
+    		encod_D = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
+    		encod_G = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
+    		LCD_Vitesse(vitesseD, vitesseG, encod_D, encod_G);
+    		delais_LCD = 0;
+    	}
+
     }
 
     if(htim->Instance == TIM7) {	// Triggered every 10 µs

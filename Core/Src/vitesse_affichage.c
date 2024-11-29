@@ -16,58 +16,77 @@
 #include <string.h>
 #include "auto.h"
 
-void LCD_Mode(uint8_t modeManuel)
+void LCD_Manuel(int a)
 {
-	char buffModeMan[10] = {0};
-
-    switch(modeManuel) {
-        case 1:
-            strcpy(buffModeMan, "M1");
-            break;
-        case 2:
-            strcpy(buffModeMan, "M2");
-            break;
-        case 3:
-            strcpy(buffModeMan, "M3");
-            break;
-        default:
-            sprintf(buffModeMan, "M %d", modeManuel);
-            break;
-    }
- 	Paint_DrawString_EN (250, 50, buffModeMan,        &Font24,    MAGENTA,  WHITE);
+	if (a == 1){
+	Paint_DrawString_EN (120, 75, "1",        &Font24,    MAGENTA,  WHITE);
+	}
+	else if (a == 2){
+	Paint_DrawString_EN (120, 75, "2",        &Font24,    MAGENTA,  WHITE);
+	}
+	else if (a==3){
+	Paint_DrawString_EN (120, 75, "3",        &Font24,    MAGENTA,  WHITE);
+	}
+	else{
+	Paint_DrawString_EN (120, 75, "      ",        &Font24,    MAGENTA,  WHITE);
+	}
 }
 
-void LCD_Vitesse(uint16_t vitesseG, uint16_t vitesseD)
+void LCD_Mode()
 {
-	char buffVG[11];
-	char buffVD[11];
-	sprintf(buffVG,
-		  "%3d mm/s",
+	char charMode[12];
+	strcpy(charMode, Get_Mode_String());
+	Paint_DrawString_EN (5, 75, charMode,        &Font24,    MAGENTA,  WHITE);
+}
+
+void LCD_Vitesse(uint16_t vitesseG, uint16_t vitesseD, int encod_D, int encod_G)
+{
+	char buffVG[14];
+	char buffVD[14];
+
+	if(encod_G == 0)
+	{
+		sprintf(buffVG,
+		  "+%3d mm/s",
 		   vitesseG);
+	}
+	else
+	{
+		sprintf(buffVG,
+			"-%3d mm/s",
+			   vitesseG);
+	}
 
-	sprintf(buffVD,
-		  "%3d mm/s",
+	if(encod_D == 0)
+	{
+		sprintf(buffVD,
+		  "+%3d mm/s",
 		   vitesseD);
+	}
+	else
+	{
+		sprintf(buffVD,
+			"-%3d mm/s",
+			   vitesseD);
+	}
 
-	Paint_DrawString_EN (190, 100, buffVG,        &Font20,    MAGENTA,  WHITE);
-	Paint_DrawString_EN (190, 125, buffVD,        &Font20,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (170, 100, buffVD,        &Font20,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (170, 125, buffVG,        &Font20,    MAGENTA,  WHITE);
 }
 
 void LCD_Init(uint8_t* a)
 {
-	char charMode[12];
-//	printf("LCD_2IN_test Demo\r\n");
 	DEV_Module_Init();
 
-//  printf("LCD_2IN_ Init and Clear...\r\n");
+
 	LCD_2IN_SetBackLight(1000);
 	LCD_2IN_Init();
 	LCD_2IN_Clear(WHITE);
 
-//  printf("Paint_NewImage\r\n");
+
 	Paint_NewImage(LCD_2IN_WIDTH,LCD_2IN_HEIGHT, ROTATE_90, WHITE);
 
-//  printf("Set Clear and Display Funtion\r\n");
+
 	Paint_SetClearFuntion(LCD_2IN_Clear);
 	Paint_SetDisplayFuntion(LCD_2IN_DrawPaint);
 
@@ -75,7 +94,7 @@ void LCD_Init(uint8_t* a)
 	Paint_Clear(MAGENTA);
 	DEV_Delay_ms(500);
 
-	//  printf("Painting...\r\n");
+
 	Paint_SetRotate(ROTATE_270);
 	Paint_DrawString_EN (50, 100, "DEMARRAGE DU",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (100, 125, "PROJET",        &Font24,    MAGENTA,  WHITE);
@@ -94,16 +113,18 @@ void LCD_Init(uint8_t* a)
 	Paint_DrawString_EN (5, 50, "Mode actuel : ",        &Font24,    MAGENTA,  WHITE);
 
 
-	Paint_DrawString_EN (250, 50, charMode,        &Font24,    MAGENTA,  WHITE);
+	LCD_Mode();
+	LCD_Manuel(3);
 
 	Paint_DrawString_EN (5, 100, "Vitesse G : ",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (5, 125, "Vitesse D : ",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (10, 220, "Attention aux enfants",        &Font20,    YELLOW,  RED);
 
 	DEV_Delay_ms(3000);
-	strcpy(charMode, Get_Mode_String());
 
 	*a = 1;
 	//DEV_Module_Exit();
 
 }
+
+

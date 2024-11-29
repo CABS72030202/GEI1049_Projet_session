@@ -6,6 +6,7 @@
  */
 
 #include "manette.h"
+#include "vitesse_affichage.h"
 
 uint8_t initcomm1[2] = {0xF0, 0x55};
 uint8_t initcomm2[2] = {0xFB, 0x00};
@@ -92,17 +93,20 @@ void Controller(){
 			Xpulse = Xdata * 0.33 * pulseCoeff;
 			Ypulse = Ydata * 0.33 * pulseCoeff;
 			maxInverse = maxInverse * 0.33;
+			LCD_Manuel(1);
 		}
 
 		if(modeVitesse==2){
 			Xpulse = Xdata * 0.66 * pulseCoeff;
 			Ypulse = Ydata * 0.66 * pulseCoeff;
 			maxInverse = maxInverse * 0.66;
+			LCD_Manuel(2);
 		}
 
 		if(modeVitesse==3){
 			Xpulse = Xdata * pulseCoeff;
 			Ypulse = Ydata * pulseCoeff;
+			LCD_Manuel(3);
 		}
 
 

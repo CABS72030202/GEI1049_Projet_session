@@ -6,6 +6,7 @@
  */
 
 #include "auto.h"
+#include "vitesse_affichage.h"
 
 uint8_t pause = 0;
 uint8_t dip_state = 0;
@@ -193,6 +194,8 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 
 		// End of sequence : reset current step and set to manual mode after drawing shape
 		curr_mode = MANUAL_MODE;
+		LCD_Mode();
+		LCD_Manuel(3);
 	}
 
 	return;
@@ -225,6 +228,8 @@ void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {
 		// End of sequence : reset current step and set to manual mode after drawing shape
 		curr_step = 1;
 		curr_mode = MANUAL_MODE;
+		LCD_Mode();
+		LCD_Manuel(3);
 		break;
 	}
 	return;
@@ -253,6 +258,8 @@ void Auto_Square(TIM_HandleTypeDef* htim3) {
 		// End of sequence : reset current step and set to manual mode after drawing shape
 		curr_step = 1;
 		curr_mode = MANUAL_MODE;
+		LCD_Mode();
+		LCD_Manuel(3);
 		break;
 	}
 	return;
