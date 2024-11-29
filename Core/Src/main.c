@@ -150,8 +150,6 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
-		LCD_Manuel(0);
-		LCD_Mode();
 		switch(curr_mode) {
 			case CIRCLE_MODE:
 				Auto_Circle(&htim3);

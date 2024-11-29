@@ -54,6 +54,9 @@ char* Get_Mode_String() {
 void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
 	// Initial setup
 	if(timer_count == 0) {
+		LCD_Manuel(0);
+		LCD_Mode();
+
 		// Calculate the duration for the turn
 		turning_time = fabs(value) * TRACK_WIDTH;
 
@@ -100,8 +103,11 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
 
     // Initial setup
     if (timer_count == 0) {
+    	LCD_Manuel(0);
+    	LCD_Mode();
+
     	// Calculate total pulses required
-    	int total_pulses = (int)(dist / TRACK_RESOLUTION);
+    	float total_pulses = dist / TRACK_RESOLUTION;
 
         // Calculate total time
         turning_time = (min_speed + max_speed) / 2.0;
@@ -161,6 +167,8 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
 void Auto_Circle(TIM_HandleTypeDef* htim3) {
 	// Initial setup
 	if(timer_count == 0) {
+		LCD_Manuel(0);
+		LCD_Mode();
 
 		// Calculate total outer wheel distance
 		float outer_circumference = (PI*DISTANCE) / TRACK_RESOLUTION;//785

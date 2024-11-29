@@ -24,10 +24,10 @@
 #define BACK_FORTH_MODE 2
 #define SQUARE_MODE 3
 
-#define TRACK_RESOLUTION 4			// Distance per encoder step in mm
-#define TRACK_WIDTH 272     		// Distance between the two tracks in mm
-#define CLOCKWISE_FACTOR 53.4522 	// Turning factor
-#define COUNTER_CLW_FACTOR 50.0000 	// Turning factor
+#define TRACK_RESOLUTION 4.652		// Distance per encoder step in mm
+#define TRACK_WIDTH 272.0     		// Distance between the two tracks in mm
+#define CLOCKWISE_FACTOR 66.879 	// Turning factor [t_moy(180) = 2.50s
+#define COUNTER_CLW_FACTOR 61 	// Turning factor [t_moy(-180) = 2.22s]
 
 #define BASE_SPEED 450
 #define DISTANCE 1000
