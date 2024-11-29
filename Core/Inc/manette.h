@@ -31,9 +31,7 @@ extern int Zbutton;
 
 extern int modeVitesse;
 extern float pulseCoeff;
-extern float maxInverse;
-extern float maxInverse2;
-extern float maxInverse1;
+extern int maxInverse;
 extern int sendPulseMotor;
 
 extern int toggle;
