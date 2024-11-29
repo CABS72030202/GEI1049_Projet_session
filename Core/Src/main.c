@@ -135,9 +135,10 @@ int main(void)
   {
       Error_Handler();
   }
+  arrTimerVitesse = __HAL_TIM_GET_AUTORELOAD(&htim6);
   curr_mode = MANUAL_MODE;
   LCD_Init(&LCD_Init_OK);
-  arrTimerVitesse = __HAL_TIM_GET_AUTORELOAD(&htim6);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -221,7 +222,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-
+/*
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD++ ; // compte les pulses de lencodeur droit
@@ -231,6 +232,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	{
 		nbPulseG++ ; // compte les pulses de lencodeur droit
 	}
+	*/
 
 	if(GPIO_Pin == Blue_Button_Pin) {
 		dip_state = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
@@ -253,6 +255,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM6)
     {
+    	/*
     	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
     	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
 
@@ -267,6 +270,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     		LCD_Vitesse(vitesseD, vitesseG, encod_D, encod_G);
     		delais_LCD = 0;
     	}
+    	*/
 
     }
 

@@ -47,31 +47,31 @@ void LCD_Vitesse(uint16_t vitesseG, uint16_t vitesseD, int encod_D, int encod_G)
 	if(encod_G == 0)
 	{
 		sprintf(buffVG,
-		  "+%3d mm/s",
+		  "+%2d",
 		   vitesseG);
 	}
 	else
 	{
 		sprintf(buffVG,
-			"-%3d mm/s",
+			"-%2d",
 			   vitesseG);
 	}
 
 	if(encod_D == 0)
 	{
 		sprintf(buffVD,
-		  "+%3d mm/s",
+		  "+%2d",
 		   vitesseD);
 	}
 	else
 	{
 		sprintf(buffVD,
-			"-%3d mm/s",
+			"-%2d",
 			   vitesseD);
 	}
 
-	Paint_DrawString_EN (170, 100, buffVD,        &Font20,    MAGENTA,  WHITE);
-	Paint_DrawString_EN (170, 125, buffVG,        &Font20,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (190, 100, buffVD,        &Font16,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (190, 125, buffVG,        &Font16,    MAGENTA,  WHITE);
 }
 
 void LCD_Init(uint8_t* a)
@@ -116,8 +116,8 @@ void LCD_Init(uint8_t* a)
 	LCD_Mode();
 	LCD_Manuel(3);
 
-	Paint_DrawString_EN (5, 100, "Vitesse G : ",        &Font24,    MAGENTA,  WHITE);
-	Paint_DrawString_EN (5, 125, "Vitesse D : ",        &Font24,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (5, 100, "Vitesse G :   %",        &Font24,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (5, 125, "Vitesse D :   %",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (10, 220, "Attention aux enfants",        &Font20,    YELLOW,  RED);
 
 	DEV_Delay_ms(3000);
