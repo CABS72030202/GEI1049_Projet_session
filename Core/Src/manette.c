@@ -23,7 +23,9 @@ int Zbutton;
 
 int modeVitesse = 3;
 float pulseCoeff = 1.96;
-int maxInverse = 500;
+float maxInverse = 500;
+float maxInverse2 = 500*0.66;
+float maxInverse1 = 500*0.33;
 int sendPulseMotor;
 
 int toggle;
@@ -46,16 +48,12 @@ void Format_Data() {
 	Zbutton = (data[5] & 0x01);
 	/* neutral x and y data: 128
 	max x and y data: 1-254 */
-
 }
-
-
 void Initialisation_manette(){
 
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, initcomm1, 2, HAL_MAX_DELAY);
 	HAL_Delay(10);
 	HAL_I2C_Master_Transmit(&hi2c1, NUNCHUK_ADDRESS, initcomm2, 2, HAL_MAX_DELAY);
-
 }
 
 
@@ -66,6 +64,14 @@ void Controller(){
 	HAL_I2C_Master_Receive(&hi2c1, NUNCHUK_ADDRESS, data, 6, HAL_MAX_DELAY);
 	Format_Data();
 
+	if(Xdata == 0){
+		Xdata = 1;
+	}
+	if(Ydata == 0){
+			Ydata = 1;
+		}
+
+
 
 
 	if(Cbutton == 0){
@@ -73,7 +79,7 @@ void Controller(){
 		ToggleModeMan();
 	}
 	if(Zbutton == 0){
-		HAL_Delay(10);
+		HAL_Delay(100);
 		ToggleModeVit();
 	}
 
@@ -92,20 +98,21 @@ void Controller(){
 		if(modeVitesse==1){
 			Xpulse = Xdata * 0.33 * pulseCoeff;
 			Ypulse = Ydata * 0.33 * pulseCoeff;
-			maxInverse = maxInverse * 0.33;
+			maxInverse = maxInverse1;
 			LCD_Manuel(1);
 		}
 
 		if(modeVitesse==2){
 			Xpulse = Xdata * 0.66 * pulseCoeff;
 			Ypulse = Ydata * 0.66 * pulseCoeff;
-			maxInverse = maxInverse * 0.66;
+			maxInverse = maxInverse2;
 			LCD_Manuel(2);
 		}
 
 		if(modeVitesse==3){
 			Xpulse = Xdata * pulseCoeff;
 			Ypulse = Ydata * pulseCoeff;
+			maxInverse = 500;
 			LCD_Manuel(3);
 		}
 
