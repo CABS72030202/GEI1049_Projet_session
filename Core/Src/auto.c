@@ -51,7 +51,7 @@ char* Get_Mode_String() {
 	return str;
 }
 
-void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
+void Auto_Angle(float value) {
 	// Initial setup
 	if(timer_count == 0) {
 		LCD_Manuel(0);
@@ -63,11 +63,11 @@ void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
 		// Determine direction of turn
 		if (value > 0) {
 			turning_time /= (360.0 * CLOCKWISE_FACTOR);
-			Droite(BASE_SPEED, htim3);
+			Droite(BASE_SPEED, &htim3);
 		}
 		else {
 			turning_time /= (360.0 * COUNTER_CLW_FACTOR);
-			Gauche(BASE_SPEED, htim3);
+			Gauche(BASE_SPEED, &htim3);
 		}
 
 		// Convert turning time in µs
@@ -84,7 +84,7 @@ void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
 		HAL_TIM_Base_Stop_IT(&htim7);
 
 		// Stop the motors
-		Stop(htim3);
+		Stop(&htim3);
 
 		// Reset temporal counter
 		timer_count = 0;
@@ -96,7 +96,7 @@ void Auto_Angle(float value, TIM_HandleTypeDef* htim3) {
 	return;
 }
 
-void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3) {
+void Auto_Line(int dist, int min_speed, int max_speed) {
     // Constants
     const float accel_fraction = 0.4; // 40% of total time for acceleration
     const float decel_fraction = 0.4; // 40% of total time for deceleration
@@ -144,7 +144,7 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
         HAL_TIM_Base_Stop_IT(&htim7);
 
         // Stop the motors
-        Stop(htim3);
+        Stop(&htim3);
 
         // Reset temporal counter
         timer_count = 0;
@@ -158,13 +158,13 @@ void Auto_Line(int dist, int min_speed, int max_speed, TIM_HandleTypeDef* htim3)
 
     // Adjust speed every iteration
     if(!pause)
-    	Avancer(current_speed, htim3);
+    	Avancer(current_speed, &htim3);
 
     return;
 }
 
 
-void Auto_Circle(TIM_HandleTypeDef* htim3) {
+void Auto_Circle() {
 	// Initial setup
 	if(timer_count == 0) {
 		LCD_Manuel(0);
@@ -181,10 +181,10 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 		ratio = 0.9 * (inner_circumference / outer_circumference);//0.588
 
 		// Constant speed
-		htim3->Instance -> CCR2 = 0;
-		htim3->Instance -> CCR4 = 0;
-		htim3->Instance -> CCR1 = BASE_SPEED;
-		htim3->Instance -> CCR3 = (ratio * BASE_SPEED);
+		htim3.Instance -> CCR2 = 0;
+		htim3.Instance -> CCR4 = 0;
+		htim3.Instance -> CCR1 = BASE_SPEED;
+		htim3.Instance -> CCR3 = (ratio * BASE_SPEED);
 		HAL_TIM_Base_Start_IT(&htim7);
 	}
 
@@ -195,7 +195,7 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 		HAL_TIM_Base_Stop_IT(&htim7);
 
 		// Stop the motors
-		Stop(htim3);
+		Stop(&htim3);
 
 		// Reset temporal counter
 		timer_count = 0;
@@ -209,27 +209,27 @@ void Auto_Circle(TIM_HandleTypeDef* htim3) {
 	return;
 }
 
-void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {
+void Auto_Back_Forth() {
 	// Manage ongoing step
 	switch(curr_step) {
 	case 1:
 		// Step 1: Move forward 1 meter
-		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED);
 		break;
 
 	case 2:
 		// Step 2: Turn 180 degrees
-		Auto_Angle(180.0, htim3);
+		Auto_Angle(180.0);
 		break;
 
 	case 3:
 		// Step 3: Move backward 1 meter
-		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED, htim3);
+		Auto_Line(DISTANCE, BASE_SPEED, BASE_SPEED);
 		break;
 
 	case 4:
 		// Step 4: Turn 180 degrees again to face the original direction
-	    Auto_Angle(180.0, htim3);
+	    Auto_Angle(180.0);
 		break;
 
 	default:
@@ -243,7 +243,7 @@ void Auto_Back_Forth(TIM_HandleTypeDef* htim3) {
 	return;
 }
 
-void Auto_Square(TIM_HandleTypeDef* htim3) {
+void Auto_Square() {
 	// Manage ongoing step
 	switch(curr_step) {
 	case 1:
@@ -251,7 +251,7 @@ void Auto_Square(TIM_HandleTypeDef* htim3) {
 	case 5:
 	case 7:
 		// Odd steps: Move forward
-		Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED, htim3);
+		Auto_Line(DISTANCE, (BASE_SPEED * 0.333), BASE_SPEED);
 		break;
 
 	case 2:
@@ -259,7 +259,7 @@ void Auto_Square(TIM_HandleTypeDef* htim3) {
 	case 6:
 	case 8:
 		// Even steps: Turn 90 degrees
-		Auto_Angle(90.0, htim3);
+		Auto_Angle(90.0);
 		break;
 
 	default:
@@ -273,37 +273,37 @@ void Auto_Square(TIM_HandleTypeDef* htim3) {
 	return;
 }
 
-void Pause(TIM_HandleTypeDef* htim3) {
+void Pause() {
 	pause = pause ^ 1;
 
 	// Save currrent CCR values
-	save[0] = htim3->Instance -> CCR1;
-	save[1] = htim3->Instance -> CCR2;
-	save[2] = htim3->Instance -> CCR3;
-	save[3] = htim3->Instance -> CCR4;
+	save[0] = htim3.Instance -> CCR1;
+	save[1] = htim3.Instance -> CCR2;
+	save[2] = htim3.Instance -> CCR3;
+	save[3] = htim3.Instance -> CCR4;
 
 	// Stop
-	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_3);
-	HAL_TIM_PWM_Stop(htim3, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_4);
 	HAL_TIM_Base_Stop_IT(&htim7);
 
 	return;
 }
 
-void Resume(TIM_HandleTypeDef* htim3) {
+void Resume() {
 	pause = pause ^ 1;
 
 	// Restore saved CCR values
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_3);
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_4);
-	htim3->Instance -> CCR1 = save[0];
-	htim3->Instance -> CCR2 = save[1];
-	htim3->Instance -> CCR3 = save[2];
-	htim3->Instance -> CCR4 = save[3];
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+	htim3.Instance -> CCR1 = save[0];
+	htim3.Instance -> CCR2 = save[1];
+	htim3.Instance -> CCR3 = save[2];
+	htim3.Instance -> CCR4 = save[3];
 	HAL_TIM_Base_Start_IT(&htim7);
 
 	return;

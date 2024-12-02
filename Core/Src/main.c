@@ -152,13 +152,13 @@ int main(void)
 	if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
 		switch(curr_mode) {
 			case CIRCLE_MODE:
-				Auto_Circle(&htim3);
+				Auto_Circle();
 				break;
 			case BACK_FORTH_MODE:
-				Auto_Back_Forth(&htim3);
+				Auto_Back_Forth();
 				break;
 			case SQUARE_MODE:
-				Auto_Square(&htim3);
+				Auto_Square();
 				break;
 		}
 	}
@@ -237,11 +237,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 		// Resume if paused
 		if(pause)
-			Resume(&htim3);
+			Resume();
 
 		// Pause if button pressed while auto mode on
 		else if(curr_mode != MANUAL_MODE)
-			Pause(&htim3);
+			Pause();
 
 		// Change current mode only on manual mode
 		if(curr_mode == MANUAL_MODE)

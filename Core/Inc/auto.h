@@ -42,6 +42,7 @@ extern int accel_time;
 extern int decel_time;
 extern int mid_time;
 extern int current_speed;
+extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim7;
 extern volatile int timer_count;	// Elapsed time in µs
 extern float turning_time;			// Target time in sec
@@ -51,12 +52,12 @@ extern float ratio;
 // Prototypes
 int Get_Mode(int, int);				// Converts the binary input into active mode
 char* Get_Mode_String();			// Convert the current mode to a string
-void Auto_Angle(float, TIM_HandleTypeDef*);
-void Auto_Line(int, int, int, TIM_HandleTypeDef*);
-void Auto_Circle(TIM_HandleTypeDef*);
-void Auto_Back_Forth(TIM_HandleTypeDef*);
-void Auto_Square(TIM_HandleTypeDef*);
-void Pause(TIM_HandleTypeDef*);
-void Resume(TIM_HandleTypeDef*);
+void Auto_Angle(float);
+void Auto_Line(int, int, int);
+void Auto_Circle();
+void Auto_Back_Forth();
+void Auto_Square();
+void Pause();
+void Resume();
 
 #endif /* INC_AUTO_H_ */
