@@ -7,4 +7,4 @@
 ../Core/Src/auto.c:248:6:Auto_Square	4
 ../Core/Src/auto.c:278:6:Pause	1
 ../Core/Src/auto.c:297:6:Resume	1
-../Core/Src/auto.c:314:6:Constant_Tuning_Mode	6
+../Core/Src/auto.c:314:6:Constant_Tuning_Mode	1

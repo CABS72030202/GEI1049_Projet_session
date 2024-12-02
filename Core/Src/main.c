@@ -142,6 +142,10 @@ int main(void)
 	  CLOCKWISE_FACTOR = STARTING_VALUE;
 	  COUNTER_CLW_FACTOR = STARTING_VALUE;
 	  RATIO = STARTING_VALUE;
+  } else {
+	  RATIO = 0.9;
+	  CLOCKWISE_FACTOR = 52.75;
+	  COUNTER_CLW_FACTOR = 0;
   }
   LCD_Init(&LCD_Init_OK);
 
@@ -244,6 +248,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			COUNTER_CLW_FACTOR += STEP_VALUE;
 			RATIO += STEP_VALUE;
 			curr_mode = DEBUG_MODE;
+			char buffer[8];
+			sprintf(buffer, "%.4f", CLOCKWISE_FACTOR);
+			Paint_DrawString_EN (120, 150, buffer, &Font16, MAGENTA, WHITE);
+			return;
 		}
 
 		// Resume if auto mode paused

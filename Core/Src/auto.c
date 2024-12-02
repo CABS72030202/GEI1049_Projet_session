@@ -20,8 +20,8 @@ int current_speed = 0;
 volatile int timer_count = 0;
 float turning_time = 0;
 int save[4] = {0, 0, 0, 0};
-float RATIO = 0.9;
-float CLOCKWISE_FACTOR = 66.879;
+float RATIO = 0;
+float CLOCKWISE_FACTOR = 0;
 float COUNTER_CLW_FACTOR = 0;
 
 int Get_Mode(int MSB_state, int LSB_state) {
@@ -221,7 +221,7 @@ void Auto_Back_Forth() {
 
 	case 2:
 		// Step 2: Turn 180 degrees
-		Auto_Angle(180.0);
+		Auto_Angle(170.0);
 		break;
 
 	case 3:
@@ -231,7 +231,7 @@ void Auto_Back_Forth() {
 
 	case 4:
 		// Step 4: Turn 180 degrees again to face the original direction
-	    Auto_Angle(180.0);
+	    Auto_Angle(170.0);
 		break;
 
 	default:
@@ -323,7 +323,7 @@ void Constant_Tuning_Mode() {
 			case 1:
 			case 3:
 				// Steps 1 and 3: Move forward
-				Auto_Line(100, BASE_SPEED, BASE_SPEED);
+				Auto_Line(50, BASE_SPEED, BASE_SPEED);
 				break;
 
 			case 2:
