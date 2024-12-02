@@ -20,7 +20,9 @@ int current_speed = 0;
 volatile int timer_count = 0;
 float turning_time = 0;
 int save[4] = {0, 0, 0, 0};
-float ratio = 0;
+float RATIO = 0.9;
+float CLOCKWISE_FACTOR = 66.879;
+float COUNTER_CLW_FACTOR = 0;
 
 int Get_Mode(int MSB_state, int LSB_state) {
 	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE,  BACK_FORTH_MODE, SQUARE_MODE};
@@ -178,13 +180,13 @@ void Auto_Circle() {
 		total_time = (int)((outer_circumference / BASE_SPEED) * 1e7);//17.4s
 
 		// Calculate wheel inner wheel speed
-		ratio = 0.9 * (inner_circumference / outer_circumference);//0.588
+		float factor = RATIO * (inner_circumference / outer_circumference);
 
 		// Constant speed
 		htim3.Instance -> CCR2 = 0;
 		htim3.Instance -> CCR4 = 0;
 		htim3.Instance -> CCR1 = BASE_SPEED;
-		htim3.Instance -> CCR3 = (ratio * BASE_SPEED);
+		htim3.Instance -> CCR3 = (factor * BASE_SPEED);
 		HAL_TIM_Base_Start_IT(&htim7);
 	}
 
@@ -263,7 +265,7 @@ void Auto_Square() {
 		break;
 
 	default:
-		// End of sequence : reset current step and set to manual mode after drawing shape
+		// End of sequence: reset current step and set to manual mode after drawing shape
 		curr_step = 1;
 		curr_mode = MANUAL_MODE;
 		LCD_Mode();
@@ -306,5 +308,38 @@ void Resume() {
 	htim3.Instance -> CCR4 = save[3];
 	HAL_TIM_Base_Start_IT(&htim7);
 
+	return;
+}
+
+void Constant_Tuning_Mode() {
+	// If robot is not moving, do nothing
+	if(curr_mode == MANUAL_MODE)
+		return;
+
+	// Testing turning factors
+	if(abs(DEBUG_MODE) == 1)
+		// Manage ongoing step
+		switch(curr_step) {
+			case 1:
+			case 3:
+				// Steps 1 and 3: Move forward
+				Auto_Line(100, BASE_SPEED, BASE_SPEED);
+				break;
+
+			case 2:
+				// Step 2: Turn 90 degrees
+				Auto_Angle(90.0 * DEBUG_MODE);
+				break;
+
+			default:
+				// End of sequence: Reset current step and set to manual mode after drawing shape
+				curr_step = 1;
+				curr_mode = MANUAL_MODE;
+				break;
+		}
+
+	// Testing auto circle ratio
+	else if(DEBUG_MODE == 2)
+		Auto_Circle();
 	return;
 }

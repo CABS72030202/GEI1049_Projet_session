@@ -137,6 +137,12 @@ int main(void)
   }
   arrTimerVitesse = __HAL_TIM_GET_AUTORELOAD(&htim6);
   curr_mode = MANUAL_MODE;
+  curr_step = 1;
+  if(DEBUG_MODE) {
+	  CLOCKWISE_FACTOR = STARTING_VALUE;
+	  COUNTER_CLW_FACTOR = STARTING_VALUE;
+	  RATIO = STARTING_VALUE;
+  }
   LCD_Init(&LCD_Init_OK);
 
   /* USER CODE END 2 */
@@ -149,7 +155,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
+	if(DEBUG_MODE)							// Find constant values
+		  Constant_Tuning_Mode();
+	else if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
 		switch(curr_mode) {
 			case CIRCLE_MODE:
 				Auto_Circle();
@@ -162,9 +170,7 @@ int main(void)
 				break;
 		}
 	}
-
 	else { 	// Manual mode
-
 		Controller();
 	}
   }
@@ -233,19 +239,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	*/
 
 	if(GPIO_Pin == Blue_Button_Pin) {
-		dip_state = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
+		if(DEBUG_MODE && curr_mode == MANUAL_MODE) {
+			CLOCKWISE_FACTOR += STEP_VALUE;
+			COUNTER_CLW_FACTOR += STEP_VALUE;
+			RATIO += STEP_VALUE;
+			curr_mode = DEBUG_MODE;
+		}
 
-		// Resume if paused
+		// Resume if auto mode paused
 		if(pause)
 			Resume();
 
-		// Pause if button pressed while auto mode on
+		// Pause auto mode if button pressed while auto mode on
 		else if(curr_mode != MANUAL_MODE)
 			Pause();
 
 		// Change current mode only on manual mode
-		if(curr_mode == MANUAL_MODE)
+		if(curr_mode == MANUAL_MODE) {
+			dip_state = Get_Mode(HAL_GPIO_ReadPin(Dipswitch_MSB_GPIO_Port, Dipswitch_MSB_Pin), HAL_GPIO_ReadPin(Dipswitch_LSB_GPIO_Port, Dipswitch_LSB_Pin));
 			curr_mode = dip_state;
+		}
 	}
 }
 
