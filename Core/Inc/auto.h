@@ -81,7 +81,7 @@ void Resume();
  */
 #define DEBUG_MODE 0
 void Constant_Tuning_Mode();
-#define STARTING_VALUE 58.50
-#define STEP_VALUE 0.01
+#define STARTING_VALUE 0.8
+#define STEP_VALUE -0.01
 
 #endif /* INC_AUTO_H_ */

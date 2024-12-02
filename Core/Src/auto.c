@@ -177,7 +177,7 @@ void Auto_Circle() {
 		float inner_circumference = outer_circumference - TRACK_WIDTH;//513
 
 		// Calculate total time
-		total_time = (int)((outer_circumference / BASE_SPEED) * 1e7);//17.4s
+		total_time = (int)((2*RATIO)*(outer_circumference / BASE_SPEED) * 1e7);//17.4s
 
 		// Calculate wheel inner wheel speed
 		float factor = RATIO * (inner_circumference / outer_circumference);
@@ -221,7 +221,7 @@ void Auto_Back_Forth() {
 
 	case 2:
 		// Step 2: Turn 180 degrees
-		Auto_Angle(170.0);
+		Auto_Angle(180.0);
 		break;
 
 	case 3:
@@ -231,7 +231,7 @@ void Auto_Back_Forth() {
 
 	case 4:
 		// Step 4: Turn 180 degrees again to face the original direction
-	    Auto_Angle(170.0);
+	    Auto_Angle(180.0);
 		break;
 
 	default:

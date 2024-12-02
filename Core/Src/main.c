@@ -143,8 +143,8 @@ int main(void)
 	  COUNTER_CLW_FACTOR = STARTING_VALUE;
 	  RATIO = STARTING_VALUE;
   } else {
-	  RATIO = 0.9;
-	  CLOCKWISE_FACTOR = 52.75;
+	  RATIO = 0.61;
+	  CLOCKWISE_FACTOR = 56.75;
 	  COUNTER_CLW_FACTOR = 0;
   }
   LCD_Init(&LCD_Init_OK);
