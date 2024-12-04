@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
+#include "rtc.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -56,10 +57,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint16_t arrTimerVitesse = 0, nbPulseD = 0, nbPulseG = 0;
+volatile uint16_t arrTimerVitesse = 199, nbPulseD = 0, nbPulseG = 0;
+uint16_t moyNbPulseG = 0, moyNbPulseD = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
 uint8_t LCD_Init_OK = 0, delais_LCD = 0;
 int encod_D = 0, encod_G = 0;
+int timeRefresh = 0;
 
 
 /* USER CODE END PV */
@@ -113,8 +116,11 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_TIM4_Init();
+  MX_RTC_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim10);
 
   if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1) != HAL_OK)
   {
@@ -155,6 +161,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	if(timeRefresh){
+	refresh_RTC_Time();
+	timeRefresh = 0;
+	}
+
 	if(DEBUG_MODE)							// Find constant values
 		  Constant_Tuning_Mode();
 	else if(curr_mode != MANUAL_MODE) { 	// Toggle auto mode
@@ -194,7 +205,8 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -226,7 +238,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-/*
+
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD++ ; // compte les pulses de lencodeur droit
@@ -236,7 +248,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	{
 		nbPulseG++ ; // compte les pulses de lencodeur droit
 	}
-	*/
+
 
 	if(GPIO_Pin == Blue_Button_Pin) {
 		if(DEBUG_MODE && curr_mode == MANUAL_MODE) {
@@ -266,27 +278,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM6)
     {
-    	/*
-    	vitesseD = CIRCONFERENCE * nbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
-    	vitesseG = CIRCONFERENCE * nbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
 
+    	moyPulse(nbPulseD, nbPulseG, &moyNbPulseD, &moyNbPulseG);
+
+    	vitesseD = CIRCONFERENCE * moyNbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
+    	vitesseG = CIRCONFERENCE * moyNbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
     	nbPulseD = 0 ;
     	nbPulseG = 0;
-    	delais_LCD++;
-
-    	if(LCD_Init_OK && delais_LCD > 7)
-    	{
-    		encod_D = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
-    		encod_G = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
-    		LCD_Vitesse(vitesseD, vitesseG, encod_D, encod_G);
-    		delais_LCD = 0;
-    	}
-    	*/
 
     }
 
     if(htim->Instance == TIM7) {	// Triggered every 10 µs
     	timer_count += 10;
+    }
+    if(htim->Instance == TIM10){
+    	timeRefresh = 1;
     }
 }
 /* USER CODE END 4 */
