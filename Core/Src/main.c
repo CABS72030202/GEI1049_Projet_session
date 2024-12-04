@@ -62,8 +62,15 @@ uint16_t moyNbPulseG = 0, moyNbPulseD = 0;
 volatile uint16_t vitesseD = 0, vitesseG = 0; //en mm par seconde
 uint8_t LCD_Init_OK = 0, delais_LCD = 0;
 int encod_D = 0, encod_G = 0;
-int timeRefresh = 0;
 
+int timeRefresh = 0;
+int vitesseRefresh = 0;
+
+GPIO_PinState Encod_B_D;
+GPIO_PinState Encod_B_G;
+
+int directionD = 0;
+int directionG = 0;
 
 /* USER CODE END PV */
 
@@ -184,9 +191,19 @@ int main(void)
 	else { 	// Manual mode
 		Controller();
 	}
+	if(vitesseRefresh >= 10){
+	LCD_Vitesse(directionD, directionG);
+	vitesseRefresh = 0;
+	}
+	else{
+		vitesseRefresh++;
+	}
+
   }
+  }
+
   /* USER CODE END 3 */
-}
+
 
 /**
   * @brief System Clock Configuration
@@ -242,11 +259,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD++ ; // compte les pulses de lencodeur droit
+    	Encod_B_D = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)
 	{
 		nbPulseG++ ; // compte les pulses de lencodeur droit
+    	Encod_B_G = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
 	}
 
 
@@ -283,10 +302,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     	vitesseD = CIRCONFERENCE * moyNbPulseD / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ; // calcule la vitesse de la chenille droite en m/s
     	vitesseG = CIRCONFERENCE * moyNbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
-    	nbPulseD = 0 ;
+    	nbPulseD = 0;
     	nbPulseG = 0;
 
-    }
+    	    if (Encod_B_D == GPIO_PIN_SET)
+    	    {
+    	        directionD = 1;
+    	    }
+    	    else
+    	    {
+    	    	directionD = 0;
+    	    }
+
+    	    if (Encod_B_G == GPIO_PIN_SET)
+    	    {
+    	        directionG = 1;
+    	    }
+    	    else
+    	    {
+    	    	directionG = 0;
+    	    }
+    	}
+
+
 
     if(htim->Instance == TIM7) {	// Triggered every 10 µs
     	timer_count += 10;

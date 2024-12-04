@@ -79,7 +79,7 @@ void Resume();
  * 	- Repeat until satisfaction, then change DEBUG_MODE value to 0 and
  * 	  change defined value of tested constant
  */
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 void Constant_Tuning_Mode();
 #define STARTING_VALUE 66.850
 #define STEP_VALUE 0.01

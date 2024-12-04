@@ -39,6 +39,7 @@
 	uint8_t sumD = 0;
 
 
+
     extern volatile uint16_t vitesseD, vitesseG; //en mm par seconde
 
 void moyPulse(uint16_t pulseD, uint16_t pulseG, uint16_t *moyD, uint16_t *moyG){
@@ -311,7 +312,7 @@ void LCD_Mode()
 	Paint_DrawString_EN (5, 75, charMode,        &Font24,    MAGENTA,  WHITE);
 }
 
-void LCD_Vitesse(/*uint16_t vitesseG, uint16_t vitesseD,*/ int encod_D, int encod_G)
+void LCD_Vitesse(int encod_D, int encod_G)
 {
 
 
@@ -383,7 +384,7 @@ void LCD_Init(uint8_t* a)
 	Paint_DrawString_EN (5, 125, "Vitesse D:    mm/s",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (10, 220, "Attention aux enfants",        &Font20,    YELLOW,  RED);
 
-	LCD_Vitesse(/*0, 0, */0, 0);
+	LCD_Vitesse(0, 0);
 
 	DEV_Delay_ms(500);
 
