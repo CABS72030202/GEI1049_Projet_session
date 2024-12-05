@@ -1,4 +1,11 @@
-../Core/Src/vitesse_affichage.c:19:6:LCD_Manuel	4
-../Core/Src/vitesse_affichage.c:35:6:LCD_Mode	1
-../Core/Src/vitesse_affichage.c:42:6:LCD_Vitesse	3
-../Core/Src/vitesse_affichage.c:77:6:LCD_Init	1
+../Core/Src/vitesse_affichage.c:45:6:moyPulse	3
+../Core/Src/vitesse_affichage.c:70:6:int_to_str	4
+../Core/Src/vitesse_affichage.c:93:6:format_date	3
+../Core/Src/vitesse_affichage.c:109:6:format_vitesse	4
+../Core/Src/vitesse_affichage.c:136:6:init_RTC_Time	7
+../Core/Src/vitesse_affichage.c:183:6:refresh_RTC_Time	8
+../Core/Src/vitesse_affichage.c:235:6:affich_RTC_Date	9
+../Core/Src/vitesse_affichage.c:292:6:LCD_Manuel	4
+../Core/Src/vitesse_affichage.c:308:6:LCD_Mode	1
+../Core/Src/vitesse_affichage.c:315:6:LCD_Vitesse	3
+../Core/Src/vitesse_affichage.c:341:6:LCD_Init	1
