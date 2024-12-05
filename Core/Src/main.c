@@ -66,8 +66,8 @@ int encod_D = 0, encod_G = 0;
 int timeRefresh = 0;
 int vitesseRefresh = 0;
 
-GPIO_PinState Encod_B_D;
-GPIO_PinState Encod_B_G;
+//GPIO_PinState Encod_B_D;
+//GPIO_PinState Encod_B_G;
 
 int directionD = 0;
 int directionG = 0;
@@ -191,13 +191,11 @@ int main(void)
 	else { 	// Manual mode
 		Controller();
 	}
-	if(vitesseRefresh >= 10){
+	if(vitesseRefresh >= 3){
 	LCD_Vitesse(directionD, directionG);
 	vitesseRefresh = 0;
 	}
-	else{
-		vitesseRefresh++;
-	}
+
 
   }
   }
@@ -259,13 +257,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_9)
 	{
 		nbPulseD++ ; // compte les pulses de lencodeur droit
-    	Encod_B_D = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
+    	//Encod_B_D = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7);
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)
 	{
 		nbPulseG++ ; // compte les pulses de lencodeur droit
-    	Encod_B_G = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
+    	//Encod_B_G = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
 	}
 
 
@@ -304,8 +302,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	vitesseG = CIRCONFERENCE * moyNbPulseG / PULSE_PAR_TOUR * 2000 / (arrTimerVitesse + 1) ;
     	nbPulseD = 0;
     	nbPulseG = 0;
+    	vitesseRefresh++;
 
-    	    if (Encod_B_D == GPIO_PIN_SET)
+    	   /* if (Encod_B_D == GPIO_PIN_SET)
     	    {
     	        directionD = 1;
     	    }
@@ -321,7 +320,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     	    else
     	    {
     	    	directionG = 0;
-    	    }
+    	    }*/
     	}
 
 

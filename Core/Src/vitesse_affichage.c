@@ -360,7 +360,7 @@ void LCD_Init(uint8_t* a)
 
 
 	Paint_SetRotate(ROTATE_270);
-	/*Paint_DrawString_EN (50, 100, "DEMARRAGE DU",        &Font24,    MAGENTA,  WHITE);
+	Paint_DrawString_EN (50, 100, "DEMARRAGE DU",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (100, 125, "PROJET",        &Font24,    MAGENTA,  WHITE);
 	Paint_DrawString_EN (70, 150, "VROUM-VROUM",        &Font24,    MAGENTA,  WHITE);
 	DEV_Delay_ms(500);
@@ -371,7 +371,7 @@ void LCD_Init(uint8_t* a)
 	Paint_DrawString_EN (85, 150, "VOUS SALUT",        &Font24,    MAGENTA,  WHITE);
 	DEV_Delay_ms(500);
 	Paint_Clear(MAGENTA);
-*/
+
 	affich_RTC_Date();
 	init_RTC_Time();
 	Paint_DrawString_EN (5, 50, "Mode actuel : ",        &Font24,    MAGENTA,  WHITE);
