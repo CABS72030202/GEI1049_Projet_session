@@ -172,7 +172,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	if(timeRefresh){
+	if(timeRefresh && curr_mode == MANUAL_MODE){
 	refresh_RTC_Time();
 	timeRefresh = 0;
 	}
@@ -195,14 +195,12 @@ int main(void)
 	else { 	// Manual mode
 		Controller();
 	}
-	if(vitesseRefresh >= 3){
-	LCD_Vitesse(directionD, directionG);
-	vitesseRefresh = 0;
+	if(vitesseRefresh >= 3 && curr_mode == MANUAL_MODE){
+		LCD_Vitesse(directionD, directionG);
+		vitesseRefresh = 0;
 	}
-
-
   }
-  }
+}
 
   /* USER CODE END 3 */
 

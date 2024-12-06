@@ -24,7 +24,6 @@ float RATIO = 0;
 float CLOCKWISE_FACTOR = 0;
 float COUNTER_CLW_FACTOR = 0;
 
-
 int Get_Mode(int MSB_state, int LSB_state) {
 	static const int id_lookup[4] = {MANUAL_MODE, CIRCLE_MODE,  BACK_FORTH_MODE, SQUARE_MODE};
 	int bin = ((MSB_state & 1) << 1) | (LSB_state & 1);
