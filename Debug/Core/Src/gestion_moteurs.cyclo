@@ -1,5 +1,5 @@
 ../Core/Src/gestion_moteurs.c:14:6:Avancer	2
-../Core/Src/gestion_moteurs.c:32:6:Droite	2
-../Core/Src/gestion_moteurs.c:48:6:Gauche	2
-../Core/Src/gestion_moteurs.c:63:6:Reculer	2
-../Core/Src/gestion_moteurs.c:79:6:Stop	1
+../Core/Src/gestion_moteurs.c:34:6:Droite	2
+../Core/Src/gestion_moteurs.c:53:6:Gauche	2
+../Core/Src/gestion_moteurs.c:72:6:Reculer	2
+../Core/Src/gestion_moteurs.c:91:6:Stop	1

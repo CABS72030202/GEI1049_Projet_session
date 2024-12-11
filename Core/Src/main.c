@@ -172,7 +172,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	if(timeRefresh && curr_mode == MANUAL_MODE){
+	if(timeRefresh && (curr_mode == MANUAL_MODE || pause)){
 	refresh_RTC_Time();
 	timeRefresh = 0;
 	}
